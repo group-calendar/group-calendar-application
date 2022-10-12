@@ -13,6 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
@@ -111,6 +112,19 @@ public class SimpleCalendar extends JFrame {
           bt_days[k].setHorizontalAlignment(SwingConstants.RIGHT);
           bt_days[k].setVerticalAlignment(SwingConstants.TOP);
           bt_days[k].setEnabled(false);
+          bt_days[k].addActionListener(
+              new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                  String toDos = JOptionPane.showInputDialog(
+                    null,
+                    "메모할 내용을 입력해 주세요",
+                    "할 일 추가",
+                    JOptionPane.INFORMATION_MESSAGE
+                  );
+                  System.out.println(toDos);
+                }
+              }
+            );
           days_panel.add(bt_days[k++]);
         }
       }
@@ -129,6 +143,19 @@ public class SimpleCalendar extends JFrame {
         bt_days[k].setEnabled(false);
         nextMonthDayCnt++;
       }
+      bt_days[k].addActionListener(
+          new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+              String toDos = JOptionPane.showInputDialog(
+                null,
+                "메모할 내용을 입력해 주세요",
+                "할 일 추가",
+                JOptionPane.INFORMATION_MESSAGE
+              );
+              System.out.println(toDos);
+            }
+          }
+        );
       days_panel.add(bt_days[k]);
       dayCnt++;
       week++;
@@ -136,16 +163,16 @@ public class SimpleCalendar extends JFrame {
     //
 
     bt_prevMonth = new JButton("<");
-    bt_prevMonth.setBounds(890, 15, 20, 20);
+    bt_prevMonth.setBounds(830, 10, 33, 33);
     bt_prevMonth.addActionListener(new MyActionListener());
 
     bt_today = new JButton("오늘");
-    bt_today.setBounds(905, 10, 70, 30);
+    bt_today.setBounds(860, 10, 100, 33);
     bt_today.setBackground(Color.RED);
     bt_today.addActionListener(new MyActionListener());
 
     bt_nextMonth = new JButton(">");
-    bt_nextMonth.setBounds(970, 15, 20, 20);
+    bt_nextMonth.setBounds(957, 10, 33, 33);
     bt_nextMonth.addActionListener(new MyActionListener());
 
     mn_function.add(mni_bookmark);
