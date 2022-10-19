@@ -13,13 +13,15 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 public class SimpleCalendar extends JFrame {
 
-  JPanel main_panel, days_panel;
+  JFrame jf_scheduleEvent;
+
+  JPanel main_panel, days_panel, scheduleEvent_panel;
   JMenuBar menuBar;
   JMenu mn_function, mn_exit;
   JMenuItem mni_bookmark;
@@ -28,7 +30,8 @@ public class SimpleCalendar extends JFrame {
   JLabel lb_week[] = new JLabel[7];
   JButton bt_prevMonth, bt_today, bt_nextMonth;
   JButton bt_days[] = new JButton[42];
-  static JButton bt_refresh;
+
+  JTextField tf_scheduleTitle, tf_scheduleContent;
 
   String str_week[] = { "일", "월", "화", "수", "목", "금", "토" };
 
@@ -44,6 +47,27 @@ public class SimpleCalendar extends JFrame {
     setLocationRelativeTo(null);
     setResizable(false);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+    //---------------- 일정 등록 관련 JFrame ---------------
+    jf_scheduleEvent = new JFrame();
+    jf_scheduleEvent.setSize(500, 300);
+    jf_scheduleEvent.setLocationRelativeTo(null);
+    jf_scheduleEvent.setTitle("일정 등록");
+
+    scheduleEvent_panel = new JPanel(null);
+
+    tf_scheduleTitle = new JTextField();
+    tf_scheduleTitle.setBounds(10, 10, 200, 100);
+
+    tf_scheduleContent = new JTextField();
+    tf_scheduleContent.setBounds(10, 130, 200, 100);
+
+    scheduleEvent_panel.add(tf_scheduleTitle);
+    scheduleEvent_panel.add(tf_scheduleContent);
+
+    jf_scheduleEvent.add(scheduleEvent_panel);
+
+    //-----------------------------------------------
 
     main_panel = new JPanel(null);
     main_panel.setBackground(Color.WHITE);
@@ -115,13 +139,13 @@ public class SimpleCalendar extends JFrame {
           bt_days[k].addActionListener(
               new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                  String toDos = JOptionPane.showInputDialog(
-                    null,
-                    "메모할 내용을 입력해 주세요",
-                    "할 일 추가",
-                    JOptionPane.INFORMATION_MESSAGE
-                  );
-                  System.out.println(toDos);
+                  // String toDos = JOptionPane.showInputDialog(
+                  //   null,
+                  //   "메모할 내용을 입력해 주세요",
+                  //   "할 일 추가",
+                  //   JOptionPane.INFORMATION_MESSAGE
+                  // );
+                  // if (!toDos.equals(""))
                 }
               }
             );
@@ -146,13 +170,14 @@ public class SimpleCalendar extends JFrame {
       bt_days[k].addActionListener(
           new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-              String toDos = JOptionPane.showInputDialog(
-                null,
-                "메모할 내용을 입력해 주세요",
-                "할 일 추가",
-                JOptionPane.INFORMATION_MESSAGE
-              );
-              System.out.println(toDos);
+              // String toDos = JOptionPane.showInputDialog(
+              //   null,
+              //   "메모할 내용을 입력해 주세요",
+              //   "할 일 추가",
+              //   JOptionPane.INFORMATION_MESSAGE
+              // );
+              // System.out.println(toDos);
+              jf_scheduleEvent.setVisible(true);
             }
           }
         );
@@ -168,7 +193,6 @@ public class SimpleCalendar extends JFrame {
 
     bt_today = new JButton("오늘");
     bt_today.setBounds(860, 10, 100, 33);
-    bt_today.setBackground(Color.RED);
     bt_today.addActionListener(new MyActionListener());
 
     bt_nextMonth = new JButton(">");
