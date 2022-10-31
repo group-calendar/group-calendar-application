@@ -198,7 +198,7 @@ public class SimpleCalendar extends JFrame {
       bt_days[k].setHorizontalAlignment(SwingConstants.RIGHT);
       bt_days[k].setVerticalAlignment(SwingConstants.TOP);
       if (k % 7 == 0 || k % 7 == 6) bt_days[k].setForeground(
-          new Color(0, 0, 130)
+          new Color(0, 0, 190)
         );
 
       // 현재 달일 때의 조건
