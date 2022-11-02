@@ -203,7 +203,7 @@ public class SimpleCalendar extends JFrame {
 
       // 현재 달일 때의 조건
       if (dayCnt <= monthSet[month - 1]) {
-        if (bt_days[k].getText().contains("" + currentDay)) {
+        if (bt_days[k].getText().equals(currentDay + "일")) {
           // bt_days[k].setForeground(Color.BLUE);
           bt_days[k].setText("📌 " + bt_days[k].getText());
         }
