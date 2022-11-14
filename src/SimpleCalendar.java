@@ -16,9 +16,17 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 public class SimpleCalendar extends JFrame {
 
@@ -34,16 +42,38 @@ public class SimpleCalendar extends JFrame {
 
   JButton bt_prevMonth, bt_today, bt_nextMonth;
   JButton bt_days[] = new JButton[42];
+  JButton bt_addSchedule;
 
   JTextField tf_scheduleContent;
 
   String str_week[] = { "일", "월", "화", "수", "목", "금", "토" };
+
+  private static TableRowSorter<TableModel> sorter;
 
   int xPos = 0;
   int year, month, week, day;
   int dayCnt = 1, nextMonthDayCnt = 1;
   int monthSet[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
   int currentYear, currentMonth, currentDay;
+
+  String header[] = { "번호", "내용", "수행 여부" };
+  Object contents[][] = {
+    {
+      "1",
+      "안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요",
+      true,
+    },
+    { "2", "방가방가", false },
+    { "2", "방가방가", true },
+    { "2", "방가방가", false },
+    { "2", "방가방가", false },
+    { "2", "방가방가", false },
+    { "2", "방가방가", false },
+    { "2", "방가방가", false },
+    { "2", "방가방가", false },
+    { "2", "방가방가", false },
+    { "2", "방가방가", false },
+  };
 
   public SimpleCalendar() {
     setTitle("Simple Calendar");
@@ -91,9 +121,47 @@ public class SimpleCalendar extends JFrame {
       }
     );
     tf_scheduleContent.setForeground(Color.GRAY);
-    tf_scheduleContent.setBounds(10, 10, 200, 30);
+
+    bt_addSchedule = new JButton("추가");
+
+    TableModel model = new DefaultTableModel(contents, header) {
+      @Override
+      public Class<?> getColumnClass(int column) {
+        return getValueAt(0, column).getClass();
+      }
+    };
+    DefaultTableCellRenderer celAlignCenter = new DefaultTableCellRenderer();
+    celAlignCenter.setHorizontalAlignment(JLabel.CENTER);
+    DefaultTableCellRenderer celAlignLeft = new DefaultTableCellRenderer();
+    celAlignLeft.setHorizontalAlignment(JLabel.LEFT);
+    JTable table = new JTable(model);
+    // table.setPreferredScrollableViewportSize(table.getPreferredSize());
+
+    table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+    table.getColumn("번호").setPreferredWidth(40);
+    table.getColumn("번호").setCellRenderer(celAlignCenter);
+    table.getColumn("내용").setPreferredWidth(220);
+    table.getColumn("내용").setCellRenderer(celAlignLeft);
+    table.getColumn("수행 여부").setPreferredWidth(50);
+    // -------- true And false checkbox filter --------
+    // RowFilter<Object, Object> filter = new RowFilter<Object, Object>() {
+    //   public boolean include(Entry entry) {
+    //     Boolean bol = (Boolean) entry.getValue(2);
+    //     return bol.booleanValue() == true;
+    //   }
+    // };
+    sorter = new TableRowSorter<TableModel>(model);
+    // sorter.setRowFilter(filter);
+    table.setRowSorter(sorter);
+    JScrollPane scrollPane = new JScrollPane(table);
+
+    tf_scheduleContent.setBounds(10, 6, 275, 30);
+    bt_addSchedule.setBounds(292, 4, 50, 33);
+    scrollPane.setBounds(10, 40, 330, 175);
 
     scheduleEvent_panel.add(tf_scheduleContent);
+    scheduleEvent_panel.add(bt_addSchedule);
+    scheduleEvent_panel.add(scrollPane);
 
     jf_scheduleEvent.add(scheduleEvent_panel);
 
@@ -117,7 +185,7 @@ public class SimpleCalendar extends JFrame {
         }
       }
     );
-    mni_bookmark = new JMenuItem("북마크 추가");
+    mni_bookmark = new JMenuItem("북마크");
 
     Calendar calendar = Calendar.getInstance();
     SimpleDateFormat formatterYear = new SimpleDateFormat("yyyy");
@@ -229,6 +297,10 @@ public class SimpleCalendar extends JFrame {
               //   JOptionPane.INFORMATION_MESSAGE
               // );
               // System.out.println(toDos);
+              // tf_scheduleContent.setText("");
+              if (
+                !tf_scheduleContent.getText().equals("새로운 이벤트")
+              ) tf_scheduleContent.setText("새로운 이벤트");
               jf_scheduleEvent.setVisible(true);
               jf_scheduleEvent.requestFocus();
               // bt_temp.requestFocus();
@@ -266,6 +338,7 @@ public class SimpleCalendar extends JFrame {
     main_panel.add(bt_nextMonth);
 
     main_panel.add(days_panel);
+    // main_panel.add(new BookmarkFrame());
     add(main_panel);
 
     setJMenuBar(menuBar);
