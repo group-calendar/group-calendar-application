@@ -94,7 +94,7 @@ public class SimpleCalendar extends JFrame {
   class MyActionListener implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
-      /// ******************* 메뉴바 액션 리스너 *******************
+      // ******************* 메뉴바 액션 리스너 *******************
       if (e.getSource() == mni_calendar) {
         card.show(main_panel, "calendarPan");
       } else if (e.getSource() == mni_bookmark) {
