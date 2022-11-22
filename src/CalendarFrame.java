@@ -44,7 +44,7 @@ class Calendar_panel extends JPanel {
 
   JButton bt_prevMonth, bt_today, bt_nextMonth;
   JButton bt_days[] = new JButton[42];
-  JButton bt_addSchedule;
+  JButton bt_addSchedule, bt_deleteSchedule, bt_modifySchedule;
 
   JTextField tf_scheduleContent;
 
@@ -83,7 +83,7 @@ class Calendar_panel extends JPanel {
 
     // ---------------- 일정 등록 관련 JFrame ---------------
     jf_scheduleEvent = new JFrame();
-    jf_scheduleEvent.setSize(350, 250);
+    jf_scheduleEvent.setSize(350, 290);
     jf_scheduleEvent.setLocationRelativeTo(null);
     jf_scheduleEvent.setTitle("일정 등록");
     // -----------------------------------------------
@@ -122,6 +122,8 @@ class Calendar_panel extends JPanel {
     tf_scheduleContent.setForeground(Color.GRAY);
 
     bt_addSchedule = new JButton("추가");
+    bt_deleteSchedule = new JButton("삭제");
+    bt_modifySchedule = new JButton("수정");
 
     TableModel model = new DefaultTableModel(contents, header) {
       @Override
@@ -156,10 +158,14 @@ class Calendar_panel extends JPanel {
 
     tf_scheduleContent.setBounds(10, 6, 275, 30);
     bt_addSchedule.setBounds(292, 4, 50, 33);
+    bt_modifySchedule.setBounds(8, 220, 165, 35);
+    bt_deleteSchedule.setBounds(177, 220, 165, 35);
     scrollPane.setBounds(10, 40, 330, 175);
 
     scheduleEvent_panel.add(tf_scheduleContent);
     scheduleEvent_panel.add(bt_addSchedule);
+    scheduleEvent_panel.add(bt_deleteSchedule);
+    scheduleEvent_panel.add(bt_modifySchedule);
     scheduleEvent_panel.add(scrollPane);
 
     jf_scheduleEvent.add(scheduleEvent_panel);
@@ -550,6 +556,7 @@ public class CalendarFrame extends JFrame {
   public CalendarFrame() {
     setTitle("캘린더");
     setSize(1000, 600);
+    setLocationRelativeTo(null);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     add(new Calendar_panel());
