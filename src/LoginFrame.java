@@ -10,9 +10,9 @@ class LoginFrame extends JFrame {
 
   private JPanel main_panel;
 
-  private JLabel lb_id;
+  private JLabel lb_email;
   private JLabel lb_pw;
-  private JTextField tf_id;
+  private JTextField tf_email;
   private JTextField tf_pw;
   private JButton bt_sign_in;
   private JButton bt_sign_up;
@@ -27,15 +27,15 @@ class LoginFrame extends JFrame {
 
     main_panel = new JPanel(null);
 
-    lb_id = new JLabel("사용자명");
-    lb_id.setBounds(0, 10, 80, 40);
-    lb_id.setHorizontalAlignment(JLabel.CENTER);
+    lb_email = new JLabel("이메일");
+    lb_email.setBounds(0, 10, 80, 40);
+    lb_email.setHorizontalAlignment(JLabel.CENTER);
     lb_pw = new JLabel("비밀번호");
     lb_pw.setBounds(0, 50, 80, 40);
     lb_pw.setHorizontalAlignment(JLabel.CENTER);
 
-    tf_id = new JTextField();
-    tf_id.setBounds(85, 10, 235, 40);
+    tf_email = new JTextField();
+    tf_email.setBounds(85, 10, 235, 40);
     tf_pw = new JPasswordField();
     tf_pw.setBounds(85, 50, 235, 40);
 
@@ -52,8 +52,8 @@ class LoginFrame extends JFrame {
     bt_sign_in.addActionListener(new MyActionListener());
     bt_sign_up.addActionListener(new MyActionListener());
 
-    main_panel.add(lb_id);
-    main_panel.add(tf_id);
+    main_panel.add(lb_email);
+    main_panel.add(tf_email);
     main_panel.add(lb_pw);
     main_panel.add(tf_pw);
     main_panel.add(bt_sign_in);
@@ -71,7 +71,7 @@ class LoginFrame extends JFrame {
       if (e.getSource() == bt_sign_in) {
         String query =
           "SELECT * FROM simple_calendar.user where id LIKE '" +
-          tf_id.getText() +
+          tf_email.getText() +
           "' AND password LIKE '" +
           tf_pw.getText() +
           "'";
