@@ -70,7 +70,7 @@ class LoginFrame extends JFrame {
     public void actionPerformed(ActionEvent e) {
       if (e.getSource() == bt_sign_in) {
         String query =
-          "SELECT * FROM simple_calendar.user where id LIKE '" +
+          "SELECT * FROM simple_calendar.user where email LIKE '" +
           tf_email.getText() +
           "' AND password LIKE '" +
           tf_pw.getText() +
@@ -87,9 +87,7 @@ class LoginFrame extends JFrame {
               "  " +
               result.getString(3) +
               "  " +
-              result.getString(4) +
-              "  " +
-              result.getString(5)
+              result.getString(4)
             );
           } while (result.next());
           new SimpleCalendar();
