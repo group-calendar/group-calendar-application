@@ -17,7 +17,9 @@ public class SignUpFrame extends JFrame {
 
   private ResultSet selectResult;
 
-  private int insertUpdateDeleteDataResult;
+  private int insertUpdateDeleteDataResult, peopleCnt;
+
+  private boolean emailDuplicationCheckFlag;
 
   DBConnection dbc = new DBConnection();
 
@@ -82,50 +84,96 @@ public class SignUpFrame extends JFrame {
   class MyActionListener implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
-      if (e.getSource() == bt_idConfirm) {} else if (
-              e.getSource() == bt_cancel
-      ) {
+      query =
+        "select count(*) from simple_calendar.user where email like '" +
+        tf_email.getText() +
+        "'";
+      if (e.getSource() == bt_idConfirm) {
+        if (tf_email.getText().equals("")) {
+          JOptionPane.showMessageDialog(
+            null,
+            "이메일을 입력해 주세요.",
+            "이메일 정보 입력",
+            JOptionPane.ERROR_MESSAGE
+          );
+          return;
+        }
+        try {
+          selectResult = dbc.selectData(query);
+          selectResult.next();
+          peopleCnt = Integer.parseInt(selectResult.getString(1));
+          if (peopleCnt == 1) {
+            JOptionPane.showMessageDialog(
+              null,
+              "이미 사용 중인 이메일입니다. 다시 입력해 주세요.",
+              "이메일 정보 중복",
+              JOptionPane.ERROR_MESSAGE
+            );
+            return;
+          } else {
+            JOptionPane.showMessageDialog(
+              null,
+              "사용 가능한 이메일입니다.",
+              "이메일 중복 확인",
+              JOptionPane.INFORMATION_MESSAGE
+            );
+            emailDuplicationCheckFlag = true;
+            tf_email.setEnabled(false);
+          }
+        } catch (Exception error) {
+          System.out.println("DB 쿼리 실행 실패");
+          System.out.print("사유 : " + error.getMessage());
+        }
+      } else if (e.getSource() == bt_cancel) {
         dispose();
         new LoginFrame();
       } else if (e.getSource() == bt_signUp) {
-        if (tf_email.getText().equals("") || pf_pw.getText().equals("") || tf_username.getText().equals("")) {
+        if (!emailDuplicationCheckFlag) {
           JOptionPane.showMessageDialog(
-                  null,
-                  "모든 사용자 정보를 입력해주세요.",
-                  "사용자 정보 확인",
-                  JOptionPane.ERROR_MESSAGE
+            null,
+            "이메일 중복 확인이 필요합니다.",
+            "이메일 중복 확인 여부",
+            JOptionPane.ERROR_MESSAGE
           );
           return;
+        }
+        if (pf_pw.getText().equals("") || tf_username.getText().equals("")) {
+          JOptionPane.showMessageDialog(
+            null,
+            "모든 사용자 정보를 입력해주세요.",
+            "사용자 정보 확인",
+            JOptionPane.ERROR_MESSAGE
+          );
         }
 
         if (!pf_pw.getText().equals(pf_pwConfirm.getText())) {
           JOptionPane.showMessageDialog(
-                  null,
-                  "비밀번호가 일치하지 않습니다.",
-                  "비밀번호 확인",
-                  JOptionPane.ERROR_MESSAGE
+            null,
+            "비밀번호가 일치하지 않습니다.",
+            "비밀번호 확인",
+            JOptionPane.ERROR_MESSAGE
           );
           return;
         }
 
         try {
           query =
-                  "INSERT INTO simple_calendar.user (email, password, username) VALUES ('" +
-                          tf_email.getText() +
-                          "', '" +
-                          pf_pw.getText() +
-                          "', '" +
-                          tf_username.getText() +
-                          "')";
+            "INSERT INTO simple_calendar.user (email, password, username) VALUES ('" +
+            tf_email.getText() +
+            "', '" +
+            pf_pw.getText() +
+            "', '" +
+            tf_username.getText() +
+            "')";
           System.out.println(query);
           insertUpdateDeleteDataResult = dbc.insertUpdateDeleteData(query);
           System.out.println(insertUpdateDeleteDataResult);
 
           JOptionPane.showMessageDialog(
-                  null,
-                  "회원가입을 완료하였습니다.",
-                  "회원가입 완료",
-                  JOptionPane.INFORMATION_MESSAGE
+            null,
+            "회원가입을 완료하였습니다.",
+            "회원가입 완료",
+            JOptionPane.INFORMATION_MESSAGE
           );
 
           new SimpleCalendar();
@@ -134,10 +182,10 @@ public class SignUpFrame extends JFrame {
           System.out.println("DB 쿼리 실행 실패");
           System.out.print("사유 : " + error.getMessage());
           JOptionPane.showMessageDialog(
-                  null,
-                  "회원가입에 실패하였습니다.\n입력q하신 내용을 다시 확인해주세요.",
-                  "회원가입 실패",
-                  JOptionPane.ERROR_MESSAGE
+            null,
+            "회원가입에 실패하였습니다.\n입력q하신 내용을 다시 확인해주세요.",
+            "회원가입 실패",
+            JOptionPane.ERROR_MESSAGE
           );
         }
       }
