@@ -38,6 +38,13 @@ public class SimpleCalendar extends JFrame {
 
   CardLayout card = new CardLayout();
 
+  private static int user_id;
+
+  public SimpleCalendar(int user_id) {
+    this.user_id = user_id;
+    new SimpleCalendar();
+  }
+
   public SimpleCalendar() {
     setTitle("Simple Calendar");
     setSize(1000, 600);
@@ -46,6 +53,8 @@ public class SimpleCalendar extends JFrame {
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     main_panel = new JPanel(card);
+
+    System.out.println("아잉눈: " + user_id);
 
     // ---------------------- 메뉴바 ----------------------
 
@@ -76,6 +85,8 @@ public class SimpleCalendar extends JFrame {
     menuBar.add(mn_exit);
 
     /////////////////////////////////////////////////
+
+    new Bookmark_panel(user_id);
 
     main_panel.add("calendarPan", new Calendar_panel());
     main_panel.add("bookmarkPan", new Bookmark_panel());
