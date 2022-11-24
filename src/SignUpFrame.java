@@ -176,7 +176,7 @@ public class SignUpFrame extends JFrame {
             JOptionPane.INFORMATION_MESSAGE
           );
 
-          new SimpleCalendar();
+          new LoginFrame();
           dispose();
         } catch (Exception error) {
           System.out.println("DB 쿼리 실행 실패");
