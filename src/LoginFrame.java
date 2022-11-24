@@ -17,6 +17,10 @@ class LoginFrame extends JFrame {
   private JButton bt_sign_in;
   private JButton bt_sign_up;
 
+  private String query;
+
+  private int user_id;
+
   DBConnection dbc = new DBConnection();
 
   public LoginFrame() {
@@ -69,7 +73,7 @@ class LoginFrame extends JFrame {
 
     public void actionPerformed(ActionEvent e) {
       if (e.getSource() == bt_sign_in) {
-        String query =
+        query =
           "SELECT * FROM simple_calendar.user where email LIKE '" +
           tf_email.getText() +
           "' AND password LIKE '" +
@@ -78,19 +82,9 @@ class LoginFrame extends JFrame {
         System.out.println(query);
         try {
           ResultSet result = dbc.selectData(query);
-          do {
-            result.next();
-            System.out.println(
-              result.getString(1) +
-              "  " +
-              result.getString(2) +
-              "  " +
-              result.getString(3) +
-              "  " +
-              result.getString(4)
-            );
-          } while (result.next());
-          new SimpleCalendar();
+          result.next();
+          user_id = Integer.parseInt(result.getString(1));
+          new SimpleCalendar(user_id);
           dispose();
         } catch (SQLException error) {
           System.out.println("DB 쿼리 실행 실패");
