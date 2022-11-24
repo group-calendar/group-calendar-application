@@ -1,6 +1,13 @@
+import java.awt.*;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import javax.swing.*;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -16,32 +23,73 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import jdbc.DBConnection;
 
 class Bookmark_panel extends JPanel {
 
-  JLabel lb_title, lb_url, lb_bookmarkImage, lb_bookmarkImage2;
+  private JLabel lb_title, lb_url, lb_bookmarkImage, lb_bookmarkImage2;
 
-  JTextField tf_title, tf_url;
+  private JTextField tf_title, tf_url;
 
-  JButton bt_addBookmark, bt_deleteBookmark, bt_modifyBookmark;
+  private JButton bt_addBookmark, bt_deleteBookmark, bt_modifyBookmark;
 
   private static TableRowSorter<TableModel> sorter;
-  TableCellRenderer tableRenderer;
+  private TableCellRenderer tableRenderer;
 
-  String header[] = { "번호", "사이트 명", "주소" };
-  Object contents[][] = {
-    { "1", "네이버", "https://www.naver.com/" },
-    { "2", "네이버", "https://www.naver.com/" },
-    {
-      "3",
-      "네이버",
-      "https://www.naver.com/https://www.naver.com/https://www.naver.com/https://www.naver.com/https://www.naver.com/https://www.naver.com/",
-    },
-  };
+  ResultSet result;
+
+  private String query, title, url;
+
+  private String header[] = { "번호", "사이트 명", "주소" };
+  private Object contents[][];
+
+  private static int user_id, peopleCnt;
+
+  DBConnection dbc = new DBConnection();
+
+  public Bookmark_panel(int user_id) {
+    this.user_id = user_id;
+  }
 
   public Bookmark_panel() {
     setLayout(null);
     setBackground(new Color(245, 245, 245));
+
+    // ---------------- 유저의 북마크 데이터들을 DB에서 불러옴 -----------------
+
+    try {
+      query =
+        "select count(*) from simple_calendar.bookmark where user_id = " +
+        user_id;
+
+      System.out.println(query);
+      result = dbc.selectData(query);
+      result.next();
+      peopleCnt = Integer.parseInt(result.getString(1));
+      contents = new Object[peopleCnt][3];
+
+      query =
+        "SELECT title, url FROM simple_calendar.bookmark WHERE user_id = " +
+        user_id;
+      System.out.println(query);
+      result = dbc.selectData(query);
+      for (int k = 0; result.next(); k++) {
+        contents[k][0] = (k + 1); // 번호( 1 ~ result.next()까지 )
+        contents[k][1] = result.getString(1); // 사이트 제목
+        contents[k][2] = result.getString(2); // 사이트 주소
+      }
+    } catch (SQLException error) {
+      System.out.println("DB 쿼리 실행 실패");
+      System.out.print("사유 : " + error.getMessage());
+      // JOptionPane.showMessageDialog(
+      //   null,
+      //   "로그인이 필요한 서비스입니다. \n로그인 후에 이용해 주세요",
+      //   "로그인 실패",
+      //   JOptionPane.ERROR_MESSAGE
+      // );
+    }
+
+    // ----------------------------------------------------------------
 
     ImageIcon icon = new ImageIcon("./images/bookmark.png");
     lb_bookmarkImage = new JLabel(icon);
