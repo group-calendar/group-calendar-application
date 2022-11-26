@@ -86,6 +86,7 @@ public class SimpleCalendar extends JFrame {
 
     /////////////////////////////////////////////////
 
+    new Calendar_panel(user_id);
     new Bookmark_panel(user_id);
 
     main_panel.add("calendarPan", new Calendar_panel());
