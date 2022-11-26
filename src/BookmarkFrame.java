@@ -1,17 +1,12 @@
-import java.awt.*;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -31,29 +26,29 @@ import jdbc.DBConnection;
 
 class Bookmark_panel extends JPanel {
 
-  private JLabel lb_title, lb_url, lb_bookmarkImage, lb_bookmarkImage2;
+  private JLabel lb_title, lb_url, lb_bookmarkImage;
 
   private JTextField tf_title, tf_url;
 
   private JButton bt_addBookmark, bt_deleteBookmark, bt_modifyBookmark, bt_websiteOpen;
 
-  private static TableRowSorter<TableModel> sorter;
+  private TableRowSorter<TableModel> sorter;
   private TableCellRenderer tableRenderer;
 
   private ResultSet result;
 
   private DefaultTableModel model;
 
-  private String query, title, url;
+  private String query;
 
   private String header[] = { "번호", "사이트 명", "주소" };
   private Object contents[][];
 
   private JTable table;
 
-  private int k;
+  private int k, peopleCnt, row, col, insertUpdateDeleteDataResult;
 
-  private static int user_id, peopleCnt, row, col, insertUpdateDeleteDataResult;
+  private static int user_id;
 
   DBConnection dbc = new DBConnection();
 
@@ -89,21 +84,15 @@ class Bookmark_panel extends JPanel {
     bt_deleteBookmark = new JButton("삭제");
     bt_websiteOpen = new JButton("이동");
 
-    model =
-      new DefaultTableModel(contents, header) {
-        @Override
-        public Class<?> getColumnClass(int column) {
-          return getValueAt(0, column).getClass();
-        }
-      };
+    model = new DefaultTableModel(contents, header);
     DefaultTableCellRenderer celAlignCenter = new DefaultTableCellRenderer();
     celAlignCenter.setHorizontalAlignment(JLabel.CENTER);
     DefaultTableCellRenderer celAlignLeft = new DefaultTableCellRenderer();
     celAlignLeft.setHorizontalAlignment(JLabel.LEFT);
-
     table = new JTable(model);
 
-    table.getTableHeader().setFont(new Font("arial", Font.BOLD, 15));
+    table.getTableHeader().setFont(new Font("arial", Font.PLAIN, 15));
+
     // 테이블 내 데이터 행 셀의 높이 지정
     table.setRowHeight(25);
     tableRenderer = table.getDefaultRenderer(JButton.class);
@@ -118,9 +107,8 @@ class Bookmark_panel extends JPanel {
     table.getColumn("번호").setCellRenderer(celAlignCenter);
     table.getColumn("사이트 명").setPreferredWidth(150);
     table.getColumn("사이트 명").setCellRenderer(celAlignLeft);
-    table.getColumn("주소").setPreferredWidth(390);
+    table.getColumn("주소").setPreferredWidth(400);
     table.getColumn("주소").setCellRenderer(celAlignLeft);
-
     // -------- true And false checkbox filter --------
     // RowFilter<Object, Object> filter = new RowFilter<Object, Object>() {
     //   public boolean include(Entry entry) {
@@ -129,11 +117,12 @@ class Bookmark_panel extends JPanel {
     //   }
     // };
     sorter = new TableRowSorter<TableModel>(model);
+
     // sorter.setRowFilter(filter);
     table.setRowSorter(sorter);
     JScrollPane scrollPane = new JScrollPane(table);
-
     lb_bookmarkImage.setBounds(-65, -130, 500, 500);
+
     lb_title.setBounds(17, 238, 80, 50);
     tf_title.setBounds(80, 245, 285, 33);
     lb_url.setBounds(30, 279, 100, 50);
@@ -143,13 +132,13 @@ class Bookmark_panel extends JPanel {
     bt_modifyBookmark.setBounds(13, 437, 352, 45);
     bt_websiteOpen.setBounds(13, 487, 352, 45);
     scrollPane.setBounds(380, 20, 600, 510);
-
     bt_addBookmark.addActionListener(new MyActionListener());
+
     bt_modifyBookmark.addActionListener(new MyActionListener());
     bt_deleteBookmark.addActionListener(new MyActionListener());
     bt_websiteOpen.addActionListener(new MyActionListener());
-
     add(lb_bookmarkImage);
+
     add(lb_title);
     add(lb_url);
     add(tf_title);
@@ -204,7 +193,7 @@ class Bookmark_panel extends JPanel {
           return;
         }
         query =
-          "INSERT INTO `simple_calendar`.`bookmark` (`user_id`, `title`, `url`) VALUES (" +
+          "INSERT INTO `simple_calendar`.`scheduleEvent` (`user_id`, `title`, `url`) VALUES (" +
           user_id +
           ", '" +
           tf_title.getText() +
@@ -245,8 +234,14 @@ class Bookmark_panel extends JPanel {
             model.removeRow(row);
             k--;
             updatingtableData();
+
             // 삭제했던 행을 강제로 다시 선택함
-            table.setRowSelectionInterval(row, row);
+            if (peopleCnt > row) table.setRowSelectionInterval(
+              row,
+              row
+            ); else if (
+              peopleCnt == row && peopleCnt != 0
+            ) table.setRowSelectionInterval(row - 1, row - 1);
 
             // 테이블 행 번호 칼럼 갱신
             for (int z = 0; z < table.getRowCount(); z++) table.setValueAt(

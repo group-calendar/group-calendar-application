@@ -1,174 +1,45 @@
-import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.RowFilter;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 
 class Calendar_panel extends JPanel {
 
-  JFrame jf_scheduleEvent;
+  private JPanel days_panel;
 
-  JPanel days_panel, scheduleEvent_panel;
+  private JLabel lb_dateTitle;
+  private JLabel lb_week[] = new JLabel[7];
 
-  JLabel lb_dateTitle;
-  JLabel lb_week[] = new JLabel[7];
+  private JButton bt_prevMonth, bt_today, bt_nextMonth;
+  private JButton bt_days[] = new JButton[42];
 
-  JButton bt_prevMonth, bt_today, bt_nextMonth;
-  JButton bt_days[] = new JButton[42];
-  JButton bt_addSchedule, bt_deleteSchedule, bt_modifySchedule;
+  private String str_week[] = { "일", "월", "화", "수", "목", "금", "토" };
+  private String selectedDay, formatMonth;
 
-  JTextField tf_scheduleContent;
+  private int xPos = 0, k;
+  private int year, month, week, day;
+  private int dayCnt = 1, nextMonthDayCnt = 1;
+  private int monthSet[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+  private int currentYear, currentMonth, currentDay, nowMonth;
+  private static int user_id;
 
-  String str_week[] = { "일", "월", "화", "수", "목", "금", "토" };
+  private boolean flag = false;
 
-  private static TableRowSorter<TableModel> sorter;
-
-  int xPos = 0;
-  int year, month, week, day;
-  int dayCnt = 1, nextMonthDayCnt = 1;
-  int monthSet[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
-  int currentYear, currentMonth, currentDay, nowMonth;
-
-  String header[] = { "번호", "내용", "수행 여부" };
-  Object contents[][] = {
-    {
-      "1",
-      "안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요안녕하세요",
-      true,
-    },
-    { "2", "방가방가", false },
-    { "2", "방가방가", true },
-    { "2", "방가방가", false },
-    { "2", "방가방가", false },
-    { "2", "방가방가", false },
-    { "2", "방가방가", false },
-    { "2", "방가방가", false },
-    { "2", "방가방가", false },
-    { "2", "방가방가", false },
-    { "2", "방가방가", false },
-  };
+  public Calendar_panel(int user_id) {
+    this.user_id = user_id;
+  }
 
   public Calendar_panel() {
     setLayout(null);
     setBackground(Color.WHITE);
-
-    // ---------------- 일정 등록 관련 JFrame ---------------
-    jf_scheduleEvent = new JFrame();
-    jf_scheduleEvent.setSize(350, 290);
-    jf_scheduleEvent.setLocationRelativeTo(null);
-    jf_scheduleEvent.setTitle("일정 등록");
-    // -----------------------------------------------
-    scheduleEvent_panel = new JPanel(null);
-    scheduleEvent_panel.setBackground(Color.WHITE);
-
-    tf_scheduleContent =
-      new JTextField("새로운 이벤트") {
-        @Override
-        public void setBorder(Border border) {}
-      };
-    tf_scheduleContent.addFocusListener(
-      new FocusAdapter() {
-        @Override
-        public void focusGained(FocusEvent e) {
-          if (tf_scheduleContent.getText().equals("새로운 이벤트")) {
-            tf_scheduleContent.setText("");
-            tf_scheduleContent.setForeground(Color.BLACK);
-          }
-        }
-
-        @Override
-        public void focusLost(FocusEvent e) {
-          if (
-            tf_scheduleContent.getText().equals("새로운 이벤트") ||
-            tf_scheduleContent.getText().length() == 0
-          ) {
-            tf_scheduleContent.setText("새로운 이벤트");
-            tf_scheduleContent.setForeground(Color.GRAY);
-          } else {
-            tf_scheduleContent.setForeground(Color.BLACK);
-          }
-        }
-      }
-    );
-    tf_scheduleContent.setForeground(Color.GRAY);
-
-    bt_addSchedule = new JButton("추가");
-    bt_deleteSchedule = new JButton("삭제");
-    bt_modifySchedule = new JButton("수정");
-
-    TableModel model = new DefaultTableModel(contents, header) {
-      @Override
-      public Class<?> getColumnClass(int column) {
-        return getValueAt(0, column).getClass();
-      }
-    };
-    DefaultTableCellRenderer celAlignCenter = new DefaultTableCellRenderer();
-    celAlignCenter.setHorizontalAlignment(JLabel.CENTER);
-    DefaultTableCellRenderer celAlignLeft = new DefaultTableCellRenderer();
-    celAlignLeft.setHorizontalAlignment(JLabel.LEFT);
-    JTable table = new JTable(model);
-    // table.setPreferredScrollableViewportSize(table.getPreferredSize());
-
-    table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-    table.getColumn("번호").setPreferredWidth(40);
-    table.getColumn("번호").setCellRenderer(celAlignCenter);
-    table.getColumn("내용").setPreferredWidth(220);
-    table.getColumn("내용").setCellRenderer(celAlignLeft);
-    table.getColumn("수행 여부").setPreferredWidth(50);
-    // -------- true And false checkbox filter --------
-    // RowFilter<Object, Object> filter = new RowFilter<Object, Object>() {
-    //   public boolean include(Entry entry) {
-    //     Boolean bol = (Boolean) entry.getValue(2);
-    //     return bol.booleanValue() == true;
-    //   }
-    // };
-    sorter = new TableRowSorter<TableModel>(model);
-    // sorter.setRowFilter(filter);
-    table.setRowSorter(sorter);
-    JScrollPane scrollPane = new JScrollPane(table);
-
-    tf_scheduleContent.setBounds(10, 6, 275, 30);
-    bt_addSchedule.setBounds(292, 4, 50, 33);
-    bt_modifySchedule.setBounds(8, 220, 165, 35);
-    bt_deleteSchedule.setBounds(177, 220, 165, 35);
-    scrollPane.setBounds(10, 40, 330, 175);
-
-    scheduleEvent_panel.add(tf_scheduleContent);
-    scheduleEvent_panel.add(bt_addSchedule);
-    scheduleEvent_panel.add(bt_deleteSchedule);
-    scheduleEvent_panel.add(bt_modifySchedule);
-    scheduleEvent_panel.add(scrollPane);
-
-    jf_scheduleEvent.add(scheduleEvent_panel);
 
     // ------------------ 달력을 담는 패널 정의 --------------------
 
@@ -188,7 +59,7 @@ class Calendar_panel extends JPanel {
     lb_dateTitle.setFont(new Font("arial", Font.BOLD, 27));
     lb_dateTitle.setBounds(10, 10, 230, 30);
 
-    for (int k = 0; k < 7; k++) {
+    for (k = 0; k < 7; k++) {
       lb_week[k] = new JLabel(str_week[k]);
       // 밑 조건식은 일요일 월요일일 때 텍스트를 회색으로 표시하기 위한 조건
       if (k == 0 || k == 6) lb_week[k].setForeground(Color.GRAY);
@@ -216,7 +87,7 @@ class Calendar_panel extends JPanel {
       day += monthSet[k];
     }
 
-    for (int k = 0; k < 42; k++) {
+    for (k = 0; k < 42; k++) {
       // 이전 달일 때의 조건
       if (k == 0) {
         for (int z = 0; z < week; z++) {
@@ -235,13 +106,53 @@ class Calendar_panel extends JPanel {
           bt_days[k].addActionListener(
               new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                  // String toDos = JOptionPane.showInputDialog(
-                  //   null,
-                  //   "메모할 내용을 입력해 주세요",
-                  //   "할 일 추가",
-                  //   JOptionPane.INFORMATION_MESSAGE
-                  // );
-                  // if (!toDos.equals(""))
+                  selectedDay = "";
+                  flag = false;
+
+                  // 클릭된 버튼 텍스트 내에서 숫자만 뽑아내는 코드
+                  for (int z = 0; z < e.getActionCommand().length(); z++) {
+                    if (e.getActionCommand().contains("월")) {
+                      if (e.getActionCommand().charAt(z) == ' ') {
+                        flag = true;
+                        continue;
+                      } else if (e.getActionCommand().charAt(z) == '일') break;
+                      if (flag) selectedDay += e.getActionCommand().charAt(z);
+                    } else {
+                      if (
+                        e.getActionCommand().charAt(z) == '일'
+                      ) break; else if (
+                        e.getActionCommand().charAt(z) >= '0' &&
+                        e.getActionCommand().charAt(z) <= '9'
+                      ) {
+                        selectedDay += e.getActionCommand().charAt(z);
+                      }
+                    }
+                  }
+
+                  if (Integer.toString(month).length() == 1) {
+                    formatMonth = "0" + month;
+                  }
+
+                  if (selectedDay.length() == 1) {
+                    selectedDay = "0" + selectedDay;
+                  }
+
+                  System.out.println(
+                    "선택된 일자(1): " +
+                    year +
+                    "-" +
+                    formatMonth +
+                    "-" +
+                    selectedDay
+                  );
+
+                  new ScheduleEvent_panel(
+                    user_id,
+                    year,
+                    formatMonth,
+                    selectedDay
+                  );
+                  new ScheduleEventFrame();
                 }
               }
             );
@@ -281,22 +192,52 @@ class Calendar_panel extends JPanel {
       bt_days[k].addActionListener(
           new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-              // String toDos = JOptionPane.showInputDialog(
-              //   null,
-              //   "메모할 내용을 입력해 주세요",
-              //   "할 일 추가",
-              //   JOptionPane.INFORMATION_MESSAGE
-              // );
-              // System.out.println(toDos);
-              // tf_scheduleContent.setText("");
-              if (
-                !tf_scheduleContent.getText().equals("새로운 이벤트")
-              ) tf_scheduleContent.setText("새로운 이벤트");
-              jf_scheduleEvent.setVisible(true);
-              jf_scheduleEvent.requestFocus();
+              selectedDay = "";
+              flag = false;
+
+              // 클릭된 버튼 텍스트 내에서 숫자만 뽑아내는 코드
+              for (int z = 0; z < e.getActionCommand().length(); z++) {
+                if (e.getActionCommand().contains("월")) {
+                  if (e.getActionCommand().charAt(z) == ' ') {
+                    flag = true;
+                    continue;
+                  } else if (e.getActionCommand().charAt(z) == '일') break;
+                  if (flag) selectedDay += e.getActionCommand().charAt(z);
+                } else {
+                  if (e.getActionCommand().charAt(z) == '일') break; else if (
+                    e.getActionCommand().charAt(z) >= '0' &&
+                    e.getActionCommand().charAt(z) <= '9'
+                  ) {
+                    selectedDay += e.getActionCommand().charAt(z);
+                  }
+                }
+              }
+
+              formatMonth = Integer.toString(month);
+              if (Integer.toString(month).length() == 1) {
+                formatMonth = "0" + month;
+                System.out.println("테스트:" + formatMonth);
+              }
+
+              if (selectedDay.length() == 1) {
+                selectedDay = "0" + selectedDay;
+              }
+
+              System.out.println(
+                "선택된 일자(2): " +
+                year +
+                "-" +
+                formatMonth +
+                "-" +
+                selectedDay
+              );
+
+              new ScheduleEvent_panel(user_id, year, formatMonth, selectedDay);
+              new ScheduleEventFrame();
               // bt_temp.requestFocus();
               // tf_scheduleContent.setText("새로운 이벤트");
               // tf_scheduleContent.requestFocus(true);
+              // INSERT INTO `simple_calendar`.`scheduleEvent` (`scheduleEvent_id`, `user_id`, `content`, `date`, `completed`) VALUES ('1', '125', '안농~~', '2022-11-01', 'true');
             }
           }
         );
@@ -529,8 +470,6 @@ class Calendar_panel extends JPanel {
               bt_days[k].setText("📌 " + bt_days[k].getText());
             }
           }
-
-          System.out.println(dayCnt + ", " + monthSet[month - 1]);
 
           if (dayCnt > monthSet[month - 1]) { // 정해진 날짜를 벗어날 때의 조건
             if (nextMonthDayCnt == 1) if (month + 1 == 13) bt_days[k].setText(
