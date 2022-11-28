@@ -97,7 +97,14 @@ class ScheduleEvent_panel extends JPanel {
     bt_deleteSchedule = new JButton("삭제");
     bt_modifySchedule = new JButton("수정");
 
-    model = new DefaultTableModel(contents, header);
+    model =
+      new DefaultTableModel(contents, header) {
+        @Override
+        public Class<?> getColumnClass(int column) {
+          return getValueAt(0, column).getClass();
+        }
+      };
+
     DefaultTableCellRenderer celAlignCenter = new DefaultTableCellRenderer();
     celAlignCenter.setHorizontalAlignment(JLabel.CENTER);
     DefaultTableCellRenderer celAlignLeft = new DefaultTableCellRenderer();
@@ -294,7 +301,7 @@ class ScheduleEvent_panel extends JPanel {
       for (k = 0; result.next(); k++) {
         contents[k][0] = (k + 1); // 테스크 순서 번호( 1 ~ result.next()까지 )
         contents[k][1] = result.getString(1); // 태스크 내용
-        contents[k][2] = result.getString(2); // 태스크 수행 여부
+        contents[k][2] = Boolean.parseBoolean(result.getString(2)); // 태스크 수행 여부
         contents[k][3] = result.getString(3); // scheduleEvent_id (PK, 기본키)
       }
     } catch (Exception error) {
