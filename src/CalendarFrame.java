@@ -3,13 +3,18 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.SecureCacheResponse;
+import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.concurrent.ArrayBlockingQueue;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import jdbc.DBConnection;
 
 class Calendar_panel extends JPanel {
 
@@ -24,6 +29,8 @@ class Calendar_panel extends JPanel {
   private String str_week[] = { "일", "월", "화", "수", "목", "금", "토" };
   private String selectedDay, formatMonth;
 
+  private ResultSet result;
+
   private int xPos = 0, k;
   private int year, month, week, day;
   private int dayCnt = 1, nextMonthDayCnt = 1;
@@ -32,6 +39,10 @@ class Calendar_panel extends JPanel {
   private static int user_id;
 
   private boolean flag = false;
+
+  private String query, date[];
+
+  private DBConnection dbc = new DBConnection();
 
   public Calendar_panel(int user_id) {
     this.user_id = user_id;
@@ -109,7 +120,7 @@ class Calendar_panel extends JPanel {
                   selectedDay = "";
                   flag = false;
 
-                  // 클릭된 버튼 텍스트 내에서 숫자만 뽑아내는 코드
+                  // 날짜에서 일수만 뽑아내는 코드
                   for (int z = 0; z < e.getActionCommand().length(); z++) {
                     if (e.getActionCommand().contains("월")) {
                       if (e.getActionCommand().charAt(z) == ' ') {
@@ -129,8 +140,10 @@ class Calendar_panel extends JPanel {
                     }
                   }
 
-                  if (Integer.toString(month).length() == 1) {
+                  formatMonth = Integer.toString(month);
+                  if (formatMonth.length() == 1) {
                     formatMonth = "0" + month;
+                    System.out.println("테스트:" + formatMonth);
                   }
 
                   if (selectedDay.length() == 1) {
@@ -214,7 +227,7 @@ class Calendar_panel extends JPanel {
               }
 
               formatMonth = Integer.toString(month);
-              if (Integer.toString(month).length() == 1) {
+              if (formatMonth.length() == 1) {
                 formatMonth = "0" + month;
                 System.out.println("테스트:" + formatMonth);
               }
@@ -245,7 +258,9 @@ class Calendar_panel extends JPanel {
       dayCnt++;
       week++;
     }
-    // -----------------------------------------------------
+
+    setScheduledEventCnt();
+
     bt_prevMonth = new JButton("<");
     bt_prevMonth.setBounds(830, 10, 33, 33);
     bt_prevMonth.addActionListener(new MyActionListener());
@@ -339,6 +354,7 @@ class Calendar_panel extends JPanel {
           dayCnt++;
           week++;
         }
+        setScheduledEventCnt();
       } else if (e.getSource() == bt_today) {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat formatterYear = new SimpleDateFormat("yyyy");
@@ -413,6 +429,7 @@ class Calendar_panel extends JPanel {
           dayCnt++;
           week++;
         }
+        setScheduledEventCnt();
       } else if (e.getSource() == bt_nextMonth) {
         month++;
         if (month == 13) {
@@ -483,9 +500,157 @@ class Calendar_panel extends JPanel {
           dayCnt++;
           week++;
         }
+        setScheduledEventCnt();
       }
       revalidate();
       repaint();
+    }
+  }
+
+  // DB에서 로그인한 유저의 등록된 모든 일정 데이터의 수를 캘린더로 불러옴
+  void setScheduledEventCnt() {
+    System.out.println("---------------------------------------------------");
+    query =
+      "select modify_time, count(scheduleEvent_id) from simple_calendar.scheduleEvent where user_id = " +
+      user_id +
+      " group by (modify_time) order by (modify_time)";
+    try {
+      result = dbc.selectData(query);
+      int tempMonth = month - 1;
+      int tempYear = year;
+      int z = 0;
+      for (k = 0; result.next(); k++) {
+        System.out.println("\n\n엥?: " + result.getString(1));
+        date = result.getString(1).split("-");
+        System.out.println("Entered: " + tempMonth);
+        // 년도 필터
+        if (
+          tempYear - Integer.parseInt(date[0]) > 1 ||
+          (
+            tempYear - Integer.parseInt(date[0]) == 1 &&
+            Integer.parseInt(date[1]) == 12 &&
+            tempMonth != 0
+          ) ||
+          (
+            tempYear - Integer.parseInt(date[0]) == 1 &&
+            Integer.parseInt(date[1]) > tempMonth &&
+            Integer.parseInt(date[1]) != 12
+          ) ||
+          (
+            tempYear - Integer.parseInt(date[0]) == 1 &&
+            Integer.parseInt(date[1]) < 12
+          )
+        ) continue;
+        System.out.println("1111111111111");
+
+        // 월 필터
+        if (
+          (
+            Integer.parseInt(date[1]) < tempMonth &&
+            Integer.parseInt(date[1]) != tempMonth &&
+            tempMonth != 12
+          )
+        ) continue;
+        System.out.println("222222222222");
+
+        for (; z < 42; z++) {
+          flag = false;
+          selectedDay = "";
+          // 날짜에서 일만 뽑아내는 코드
+          for (int i = 0; i < bt_days[z].getText().length(); i++) {
+            if (bt_days[z].getText().contains("월")) {
+              if (bt_days[z].getText().charAt(i) == ' ') {
+                flag = true;
+                continue;
+              } else if (bt_days[z].getText().charAt(i) == '일') break;
+              if (flag) selectedDay += bt_days[z].getText().charAt(i);
+              System.out.println("\n\n뽑아 냄(1): " + selectedDay);
+            } else {
+              if (bt_days[z].getText().charAt(i) == '일') break; else if (
+                bt_days[z].getText().charAt(i) >= '0' &&
+                bt_days[z].getText().charAt(i) <= '9'
+              ) {
+                selectedDay += bt_days[z].getText().charAt(i);
+              }
+            }
+          }
+
+          System.out.println("\n\n뽑아 냄(2): " + selectedDay);
+
+          if (selectedDay.length() == 1) {
+            selectedDay = "0" + selectedDay;
+          }
+
+          if (selectedDay.equals("01")) {
+            tempMonth++;
+            if (tempMonth == 13) {
+              tempYear++;
+              tempMonth = 1;
+            }
+          }
+
+          if (tempMonth == 0) {
+            tempYear--;
+            tempMonth = 12;
+          }
+
+          System.out.println(
+            "아잉눈: " +
+            date[1] +
+            " / tempMonth: " +
+            tempMonth +
+            " / " +
+            selectedDay
+          );
+
+          if (
+            tempMonth >= Integer.parseInt(date[1]) &&
+            Integer.parseInt(date[2]) < Integer.parseInt(selectedDay)
+          ) {
+            break;
+          }
+
+          if (
+            month == 1 &&
+            Integer.parseInt(date[1]) == 12 &&
+            z == 0 &&
+            selectedDay.equals("01")
+          ) {
+            tempMonth--;
+            break;
+          }
+
+          formatMonth = Integer.toString(tempMonth);
+          if (formatMonth.length() == 1) {
+            formatMonth = "0" + tempMonth;
+          }
+
+          System.out.println("DB: " + date[0] + "-" + date[1] + "-" + date[2]);
+          System.out.println(
+            "PC: " + year + "-" + formatMonth + "-" + selectedDay + ""
+          );
+
+          System.out.println(
+            "확인: " + tempYear + "-" + formatMonth + "-" + selectedDay
+          );
+
+          if (
+            Integer.parseInt(date[0]) == tempYear &&
+            Integer.parseInt(date[1]) == tempMonth &&
+            Integer.parseInt(date[2]) == Integer.parseInt(selectedDay)
+          ) {
+            System.out.println("설정함");
+            bt_days[z].setText(
+                bt_days[z].getText() + " (" + result.getString(2) + ")"
+              );
+            z++;
+            break;
+          }
+        }
+      }
+    } catch (Exception error) {
+      System.out.println("DB 쿼리 실행 실패");
+      System.out.print("사유 : " + error.getMessage());
     }
   }
 }
