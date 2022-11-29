@@ -40,10 +40,10 @@ class ScheduleEvent_panel extends JPanel {
   private DefaultTableModel model;
 
   public ScheduleEvent_panel(
-    int user_id,
-    int year,
-    String formatMonth,
-    String selectedDay
+          int user_id,
+          int year,
+          String formatMonth,
+          String selectedDay
   ) {
     this.year = year;
     this.user_id = user_id;
@@ -59,38 +59,38 @@ class ScheduleEvent_panel extends JPanel {
     updatingtableData();
 
     tf_scheduleContent =
-      new JTextField("새로운 이벤트") {
-        @Override
-        public void setBorder(Border border) {}
-      };
+            new JTextField("새로운 이벤트") {
+              @Override
+              public void setBorder(Border border) {}
+            };
     tf_scheduleContent.addFocusListener(
-      new FocusAdapter() {
-        @Override
-        public void focusGained(FocusEvent e) {
-          if (tf_scheduleContent.getText().equals("새로운 이벤트")) {
-            tf_scheduleContent.setText("");
-            tf_scheduleContent.setForeground(Color.BLACK);
-          }
-        }
+            new FocusAdapter() {
+              @Override
+              public void focusGained(FocusEvent e) {
+                if (tf_scheduleContent.getText().equals("새로운 이벤트")) {
+                  tf_scheduleContent.setText("");
+                  tf_scheduleContent.setForeground(Color.BLACK);
+                }
+              }
 
-        @Override
-        public void focusLost(FocusEvent e) {
-          if (
-            tf_scheduleContent.getText().equals("새로운 이벤트") ||
-            tf_scheduleContent.getText().length() == 0
-          ) {
-            tf_scheduleContent.setText("새로운 이벤트");
-            tf_scheduleContent.setForeground(Color.GRAY);
-          } else {
-            tf_scheduleContent.setForeground(Color.BLACK);
-          }
-        }
-      }
+              @Override
+              public void focusLost(FocusEvent e) {
+                if (
+                        tf_scheduleContent.getText().equals("새로운 이벤트") ||
+                                tf_scheduleContent.getText().length() == 0
+                ) {
+                  tf_scheduleContent.setText("새로운 이벤트");
+                  tf_scheduleContent.setForeground(Color.GRAY);
+                } else {
+                  tf_scheduleContent.setForeground(Color.BLACK);
+                }
+              }
+            }
     );
     tf_scheduleContent.setForeground(Color.GRAY);
 
     if (
-      !tf_scheduleContent.getText().equals("새로운 이벤트")
+            !tf_scheduleContent.getText().equals("새로운 이벤트")
     ) tf_scheduleContent.setText("새로운 이벤트");
 
     bt_addSchedule = new JButton("추가");
@@ -98,12 +98,12 @@ class ScheduleEvent_panel extends JPanel {
     bt_modifySchedule = new JButton("수정");
 
     model =
-      new DefaultTableModel(contents, header) {
-        @Override
-        public Class<?> getColumnClass(int column) {
-          return getValueAt(0, column).getClass();
-        }
-      };
+            new DefaultTableModel(contents, header) {
+              @Override
+              public Class<?> getColumnClass(int column) {
+                return getValueAt(0, column).getClass();
+              }
+            };
 
     DefaultTableCellRenderer celAlignCenter = new DefaultTableCellRenderer();
     celAlignCenter.setHorizontalAlignment(JLabel.CENTER);
@@ -155,31 +155,31 @@ class ScheduleEvent_panel extends JPanel {
     public void actionPerformed(ActionEvent e) {
       if (e.getSource() == bt_addSchedule) {
         if (
-          tf_scheduleContent.getText().equals("") ||
-          tf_scheduleContent.getText().equals("새로운 이벤트")
+                tf_scheduleContent.getText().equals("") ||
+                        tf_scheduleContent.getText().equals("새로운 이벤트")
         ) {
           JOptionPane.showMessageDialog(
-            null,
-            "일정을 입력해 주세요.",
-            "추가 실패",
-            JOptionPane.ERROR_MESSAGE
+                  null,
+                  "일정을 입력해 주세요.",
+                  "추가 실패",
+                  JOptionPane.ERROR_MESSAGE
           );
           return;
         }
 
         query =
-          "INSERT INTO `simple_calendar`.`scheduleEvent` (`user_id`, `content`, `modify_time`, `completed`) VALUES (" +
-          user_id +
-          ", '" +
-          tf_scheduleContent.getText() +
-          "', '" +
-          year +
-          "-" +
-          formatMonth +
-          "-" +
-          selectedDay +
-          "', '" +
-          "false');";
+                "INSERT INTO `simple_calendar`.`scheduleEvent` (`user_id`, `content`, `modify_time`, `completed`) VALUES (" +
+                        user_id +
+                        ", '" +
+                        tf_scheduleContent.getText() +
+                        "', '" +
+                        year +
+                        "-" +
+                        formatMonth +
+                        "-" +
+                        selectedDay +
+                        "', '" +
+                        "false');";
 
         System.out.println(query);
         try {
@@ -192,21 +192,22 @@ class ScheduleEvent_panel extends JPanel {
           System.out.println("DB 쿼리 실행 실패");
           System.out.print("사유 : " + error.getMessage());
         }
-      } else if (e.getSource() == bt_deleteSchedule) {
+      }
+      else if (e.getSource() == bt_deleteSchedule) {
         row = table.getSelectedRow();
         if (row == -1) {
           JOptionPane.showMessageDialog(
-            null,
-            "삭제할 데이터의 행을 선택해 주세요.",
-            "제거 실패",
-            JOptionPane.ERROR_MESSAGE
+                  null,
+                  "삭제할 데이터의 행을 선택해 주세요.",
+                  "제거 실패",
+                  JOptionPane.ERROR_MESSAGE
           );
           return;
         }
         query =
-          "DELETE FROM `simple_calendar`.`scheduleEvent` WHERE (`scheduleEvent_id` = " +
-          contents[row][3] +
-          ")";
+                "DELETE FROM `simple_calendar`.`scheduleEvent` WHERE (`scheduleEvent_id` = " +
+                        contents[row][3] +
+                        ")";
         System.out.println(query);
         try {
           insertUpdateDeleteDataResult = dbc.insertUpdateDeleteData(query);
@@ -218,43 +219,44 @@ class ScheduleEvent_panel extends JPanel {
 
             // 삭제했던 행을 강제로 다시 선택함
             if (peopleCnt > row) table.setRowSelectionInterval(
-              row,
-              row
+                    row,
+                    row
             ); else if (
-              peopleCnt == row && peopleCnt != 0
+                    peopleCnt == row && peopleCnt != 0
             ) table.setRowSelectionInterval(row - 1, row - 1);
 
             // 테이블 행 번호 칼럼 갱신
             for (int z = 0; z < table.getRowCount(); z++) table.setValueAt(
-              z + 1,
-              z,
-              0
+                    z + 1,
+                    z,
+                    0
             );
           }
         } catch (Exception error) {
           System.out.println("DB 쿼리 실행 실패");
           System.out.print("사유 : " + error.getMessage());
         }
-      } else if (e.getSource() == bt_modifySchedule) {
+      }
+      else if (e.getSource() == bt_modifySchedule) {
         row = table.getSelectedRow();
         if (row == -1) {
           JOptionPane.showMessageDialog(
-            null,
-            "수정할 데이터의 행을 선택해 주세요.",
-            "업데이트 실패",
-            JOptionPane.ERROR_MESSAGE
+                  null,
+                  "수정할 데이터의 행을 선택해 주세요.",
+                  "업데이트 실패",
+                  JOptionPane.ERROR_MESSAGE
           );
           return;
         }
         col = table.getSelectedColumn();
         query =
-          "UPDATE `simple_calendar`.`scheduleEvent` SET `content` = '" +
-          table.getValueAt(row, 1) +
-          "', `completed` = '" +
-          table.getValueAt(row, 2) +
-          "' WHERE (`scheduleEvent_id` = " +
-          contents[row][3] +
-          ")";
+                "UPDATE `simple_calendar`.`scheduleEvent` SET `content` = '" +
+                        table.getValueAt(row, 1) +
+                        "', `completed` = '" +
+                        table.getValueAt(row, 2) +
+                        "' WHERE (`scheduleEvent_id` = " +
+                        contents[row][3] +
+                        ")";
         System.out.println(query);
         try {
           insertUpdateDeleteDataResult = dbc.insertUpdateDeleteData(query);
@@ -264,21 +266,30 @@ class ScheduleEvent_panel extends JPanel {
           System.out.print("사유 : " + error.getMessage());
         }
       }
+      for (int i = 0; i < 42; i++){
+        String str = Calendar_panel.bt_days[i].getText();
+        if(str.endsWith(")")) {
+          Calendar_panel.bt_days[i].setText(str.substring(0, str.length() - 4));
+        }
+      }
+      Calendar_panel.setScheduledEventCnt();
+      Calendar_panel.days_panel.revalidate();
+      Calendar_panel.days_panel.repaint();
     }
   }
 
   void updatingtableData() {
     try {
       query =
-        "select count(*) from simple_calendar.scheduleEvent where user_id = " +
-        user_id +
-        " AND modify_time LIKE '" +
-        year +
-        "-" +
-        formatMonth +
-        "-" +
-        selectedDay +
-        "';";
+              "select count(*) from simple_calendar.scheduleEvent where user_id = " +
+                      user_id +
+                      " AND modify_time LIKE '" +
+                      year +
+                      "-" +
+                      formatMonth +
+                      "-" +
+                      selectedDay +
+                      "';";
       System.out.println(query);
 
       result = dbc.selectData(query);
@@ -286,15 +297,15 @@ class ScheduleEvent_panel extends JPanel {
       peopleCnt = Integer.parseInt(result.getString(1));
       contents = new Object[peopleCnt][4];
       query =
-        "SELECT content, completed, scheduleEvent_id FROM simple_calendar.scheduleEvent WHERE user_id = " +
-        user_id +
-        " AND modify_time LIKE '" +
-        year +
-        "-" +
-        formatMonth +
-        "-" +
-        selectedDay +
-        "';";
+              "SELECT content, completed, scheduleEvent_id FROM simple_calendar.scheduleEvent WHERE user_id = " +
+                      user_id +
+                      " AND modify_time LIKE '" +
+                      year +
+                      "-" +
+                      formatMonth +
+                      "-" +
+                      selectedDay +
+                      "';";
 
       System.out.println(query);
       result = dbc.selectData(query);
