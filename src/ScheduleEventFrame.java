@@ -268,8 +268,12 @@ class ScheduleEvent_panel extends JPanel {
       }
       for (int i = 0; i < 42; i++){
         String str = Calendar_panel.bt_days[i].getText();
-        if(str.endsWith(")")) {
-          Calendar_panel.bt_days[i].setText(str.substring(0, str.length() - 4));
+        if(str != null && str.endsWith(")")) {
+          while(!str.endsWith("(")){
+            str = str.substring(0, str.length()-1);
+          }
+          str = str.substring(0, str.length()-2);
+          Calendar_panel.bt_days[i].setText(str);
         }
       }
       Calendar_panel.setScheduledEventCnt();
