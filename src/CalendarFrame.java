@@ -39,7 +39,7 @@ class Calendar_panel extends JPanel {
   private int currentYear, currentMonth, currentDay, nowMonth;
   private static int user_id;
 
-  private static boolean flag = false;
+  private static boolean flag = false, flag2 = false;
 
   private static String query;
   private static String[] date;
@@ -523,10 +523,11 @@ class Calendar_panel extends JPanel {
       int tempMonth = month - 1;
       int tempYear = year;
       int z = 0;
+      flag2 = false;
       for (k = 0; result.next(); k++) {
-        System.out.println("\n\n엥?: " + result.getString(1));
+        System.out.println("\n\n(DB): " + result.getString(1));
         date = result.getString(1).split("-");
-        System.out.println("Entered: " + tempMonth);
+        System.out.println("Entered month: " + tempMonth);
         // 년도 필터
         if (
                 tempYear - Integer.parseInt(date[0]) > 1 ||
@@ -586,11 +587,31 @@ class Calendar_panel extends JPanel {
           }
 
           if (selectedDay.equals("01")) {
+            if (flag2 == true) {
+              tempMonth--;
+              flag = false;
+            }
             tempMonth++;
             if (tempMonth == 13) {
               tempYear++;
               tempMonth = 1;
             }
+          }
+
+          System.out.println("수정된 날짜 확인: " + tempMonth);
+
+          // selectedDay가 1로 시작하는데, 만약 이전 달 1일에 등록된 일정이 있다면,
+          // 현재 보고 있는 달 1일의 태스크 수가 나타나지 않는 문제가 있었음.
+          if (
+            z == 0 &&
+            Integer.parseInt(selectedDay) == 1 &&
+            Integer.parseInt(date[2]) == 1 &&
+            tempMonth - Integer.parseInt(date[1]) == 1
+          ) {
+            System.out.println("에잉...??");
+            flag2 = true;
+            z = 0;
+            break;
           }
 
           if (tempMonth == 0) {
@@ -643,7 +664,9 @@ class Calendar_panel extends JPanel {
                           Integer.parseInt(date[1]) == tempMonth &&
                           Integer.parseInt(date[2]) == Integer.parseInt(selectedDay)
           ) {
-            System.out.println("설정함");
+            System.out.println(
+              "eiugherighweioughweriuoghweoiughwerouihgrewiuoghwe"
+            );
             bt_days[z].setText(
                     bt_days[z].getText() + " (" + result.getString(2) + ")"
             );
