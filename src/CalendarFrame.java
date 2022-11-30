@@ -39,8 +39,12 @@ class Calendar_panel extends JPanel {
   private int currentYear, currentMonth, currentDay, nowMonth;
   private static int user_id;
 
+<<<<<<< HEAD
   private static boolean flag = false;
   private static boolean flag2 = false;
+=======
+  private static boolean flag = false, flag2 = false;
+>>>>>>> f5cdd618cee949f83cff6966ba55bb10c4e1dbb0
 
   private static String query;
   private static String[] date;
