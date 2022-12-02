@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.ArrayBlockingQueue;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,7 +21,7 @@ class Calendar_panel extends JPanel {
 
   private JPanel days_panel;
 
-  private JLabel lb_dateTitle;
+  private JLabel lb_dateTitle, lb_groupImage, lb_groupName;
   private JLabel lb_week[] = new JLabel[7];
 
   private JButton bt_prevMonth, bt_today, bt_nextMonth;
@@ -36,16 +37,22 @@ class Calendar_panel extends JPanel {
   private int dayCnt = 1, nextMonthDayCnt = 1;
   private int monthSet[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
   private int currentYear, currentMonth, currentDay, nowMonth;
-  private static int user_id;
+  private static int group_id;
 
   private boolean flag = false, flag2 = false;
 
   private String query, date[];
 
+  private static String groupName;
+
   private DBConnection dbc = new DBConnection();
 
-  public Calendar_panel(int user_id) {
-    this.user_id = user_id;
+  private boolean isAdmin;
+
+  public Calendar_panel(int group_id, String groupName, boolean isAdmin) {
+    this.group_id = group_id;
+    this.groupName = groupName;
+    this.isAdmin = isAdmin;
   }
 
   public Calendar_panel() {
@@ -56,6 +63,16 @@ class Calendar_panel extends JPanel {
 
     days_panel = new JPanel(new GridLayout(0, 7));
     days_panel.setBounds(0, 70, 1000, 480);
+
+    // ---------------------------------------------------------------
+
+    ImageIcon icon = new ImageIcon("./images/groupImage.png");
+    lb_groupImage = new JLabel(icon);
+    lb_groupImage.setBounds(330, -25, 200, 100);
+
+    lb_groupName = new JLabel(groupName);
+    lb_groupName.setBounds(455, -20, 200, 100);
+    lb_groupName.setFont(new Font("arial", Font.BOLD, 27));
 
     // ----------------------- 날짜 및 캘린더 정의 -----------------------
 
@@ -159,11 +176,12 @@ class Calendar_panel extends JPanel {
                     selectedDay
                   );
 
-                  new ScheduleEvent_panel(
-                    user_id,
+                  new ScheduleEventFrame(
+                    group_id,
                     year,
                     formatMonth,
-                    selectedDay
+                    selectedDay,
+                    isAdmin
                   );
                   new ScheduleEventFrame();
                 }
@@ -245,12 +263,18 @@ class Calendar_panel extends JPanel {
                 selectedDay
               );
 
-              new ScheduleEvent_panel(user_id, year, formatMonth, selectedDay);
+              new ScheduleEventFrame(
+                group_id,
+                year,
+                formatMonth,
+                selectedDay,
+                isAdmin
+              );
               new ScheduleEventFrame();
               // bt_temp.requestFocus();
               // tf_scheduleContent.setText("새로운 이벤트");
               // tf_scheduleContent.requestFocus(true);
-              // INSERT INTO `simple_calendar`.`scheduleEvent` (`scheduleEvent_id`, `user_id`, `content`, `date`, `completed`) VALUES ('1', '125', '안농~~', '2022-11-01', 'true');
+              // INSERT INTO `simple_calendar`.`scheduleEvent` (`scheduleEvent_id`, `group_id`, `content`, `date`, `completed`) VALUES ('1', '125', '안농~~', '2022-11-01', 'true');
             }
           }
         );
@@ -273,6 +297,8 @@ class Calendar_panel extends JPanel {
     bt_nextMonth.setBounds(957, 10, 33, 33);
     bt_nextMonth.addActionListener(new MyActionListener());
 
+    add(lb_groupImage);
+    add(lb_groupName);
     add(lb_dateTitle);
     add(bt_prevMonth);
     add(bt_today);
@@ -429,7 +455,6 @@ class Calendar_panel extends JPanel {
           dayCnt++;
           week++;
         }
-        setScheduledEventCnt();
       } else if (e.getSource() == bt_nextMonth) {
         month++;
         if (month == 13) {
@@ -511,8 +536,8 @@ class Calendar_panel extends JPanel {
   void setScheduledEventCnt() {
     System.out.println("---------------------------------------------------");
     query =
-      "select modify_time, count(scheduleEvent_id) from simple_calendar.scheduleEvent where user_id = " +
-      user_id +
+      "select modify_time, count(scheduleEvent_id) from simple_calendar.scheduleEvent where group_id = " +
+      group_id +
       " group by (modify_time) order by (modify_time)";
     try {
       result = dbc.selectData(query);
