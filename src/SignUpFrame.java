@@ -8,9 +8,9 @@ import jdbc.DBConnection;
 public class SignUpFrame extends JFrame {
 
   private JPanel main_panel;
-  private JTextField tf_email, tf_username;
-  private JTextField pf_pw, pf_pwConfirm;
-  private JLabel lb_email, lb_pw, lb_pwConfirm, lb_username;
+  private JTextField tf_groupId, tf_groupName;
+  private JTextField pf_pw, pf_pwConfirm, pf_adminPw, pf_adminPwConfirm;
+  private JLabel lb_groupId, lb_pw, lb_pwConfirm, lb_groupName, lb_adminPw, lb_adminPwConirm;
   private JButton bt_signUp, bt_cancel, bt_idConfirm;
 
   private String query;
@@ -24,49 +24,62 @@ public class SignUpFrame extends JFrame {
   DBConnection dbc = new DBConnection();
 
   public SignUpFrame() {
-    setTitle("회원가입");
-    setSize(420, 300);
+    setTitle("그룹 생성");
+    setSize(420, 400);
     setLocationRelativeTo(null);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
     main_panel = new JPanel(null);
 
-    lb_email = new JLabel("이메일");
+    lb_groupId = new JLabel("그룹 아이디");
     lb_pw = new JLabel("비밀번호");
     lb_pwConfirm = new JLabel("비밀번호 확인");
-    lb_username = new JLabel("이름");
+    lb_adminPw = new JLabel("관리자 암호");
+    lb_adminPwConirm = new JLabel("암호 확인");
+    lb_groupName = new JLabel("그룹명");
 
-    tf_email = new JTextField(10);
-    pf_pw = new JPasswordField(10);
-    pf_pwConfirm = new JPasswordField(10);
-    tf_username = new JTextField(10);
-    bt_signUp = new JButton("회원가입");
+    tf_groupId = new JTextField();
+    pf_pw = new JPasswordField();
+    pf_pwConfirm = new JPasswordField();
+    pf_adminPw = new JPasswordField();
+    pf_adminPwConfirm = new JPasswordField();
+    tf_groupName = new JTextField();
+    bt_signUp = new JButton("그룹 생성");
     bt_cancel = new JButton("취소");
     bt_idConfirm = new JButton("중복확인");
 
-    lb_email.setBounds(20, 25, 80, 30);
+    lb_groupId.setBounds(20, 25, 80, 30);
     lb_pw.setBounds(20, 75, 80, 30);
     lb_pwConfirm.setBounds(20, 125, 80, 30);
-    lb_username.setBounds(20, 175, 80, 30);
+    lb_adminPw.setBounds(20, 175, 80, 30);
+    lb_adminPwConirm.setBounds(20, 225, 80, 30);
+    lb_groupName.setBounds(20, 275, 80, 30);
 
-    tf_email.setBounds(100, 20, 235, 40);
+    tf_groupId.setBounds(100, 20, 235, 40);
     pf_pw.setBounds(100, 70, 235, 40);
     pf_pwConfirm.setBounds(100, 120, 235, 40);
-    tf_username.setBounds(100, 170, 235, 40);
+    pf_adminPw.setBounds(100, 170, 235, 40);
+    pf_adminPwConfirm.setBounds(100, 220, 235, 40);
+    tf_groupName.setBounds(100, 270, 235, 40);
 
     bt_idConfirm.setBounds(337, 20, 70, 40);
-    bt_cancel.setBounds(80, 220, 120, 40);
-    bt_signUp.setBounds(225, 220, 120, 40);
+    bt_cancel.setBounds(80, 320, 120, 40);
+    bt_signUp.setBounds(225, 320, 120, 40);
 
     main_panel.add(lb_pw);
     main_panel.add(lb_pw);
     main_panel.add(pf_pw);
     main_panel.add(lb_pwConfirm);
     main_panel.add(pf_pwConfirm);
-    main_panel.add(lb_username);
-    main_panel.add(tf_username);
-    main_panel.add(lb_email);
-    main_panel.add(tf_email);
+    main_panel.add(lb_groupName);
+    main_panel.add(lb_adminPw);
+    main_panel.add(lb_adminPwConirm);
+    main_panel.add(pf_adminPw);
+    main_panel.add(pf_adminPwConfirm);
+    main_panel.add(lb_adminPwConirm);
+    main_panel.add(tf_groupName);
+    main_panel.add(lb_groupId);
+    main_panel.add(tf_groupId);
     main_panel.add(bt_idConfirm);
     main_panel.add(bt_signUp);
     main_panel.add(bt_cancel);
@@ -85,15 +98,15 @@ public class SignUpFrame extends JFrame {
 
     public void actionPerformed(ActionEvent e) {
       query =
-        "select count(*) from simple_calendar.user where email like '" +
-        tf_email.getText() +
+        "select count(*) from simple_calendar.user where groupId like '" +
+        tf_groupId.getText() +
         "'";
       if (e.getSource() == bt_idConfirm) {
-        if (tf_email.getText().equals("")) {
+        if (tf_groupId.getText().equals("")) {
           JOptionPane.showMessageDialog(
             null,
-            "이메일을 입력해 주세요.",
-            "이메일 정보 입력",
+            "그룹 아이디를 입력해 주세요.",
+            "그룹 아이디 정보 입력",
             JOptionPane.ERROR_MESSAGE
           );
           return;
@@ -105,20 +118,20 @@ public class SignUpFrame extends JFrame {
           if (peopleCnt == 1) {
             JOptionPane.showMessageDialog(
               null,
-              "이미 사용 중인 이메일입니다. 다시 입력해 주세요.",
-              "이메일 정보 중복",
+              "이미 사용 중인 그룹 아이디 입니다. 다시 입력해 주세요.",
+              "그룹 아이디 중복",
               JOptionPane.ERROR_MESSAGE
             );
             return;
           } else {
             JOptionPane.showMessageDialog(
               null,
-              "사용 가능한 이메일입니다.",
-              "이메일 중복 확인",
+              "사용 가능한 그룹 아이디입니다.",
+              "그룹 아이디 중복 확인",
               JOptionPane.INFORMATION_MESSAGE
             );
             emailDuplicationCheckFlag = true;
-            tf_email.setEnabled(false);
+            tf_groupId.setEnabled(false);
           }
         } catch (Exception error) {
           System.out.println("DB 쿼리 실행 실패");
@@ -131,13 +144,13 @@ public class SignUpFrame extends JFrame {
         if (!emailDuplicationCheckFlag) {
           JOptionPane.showMessageDialog(
             null,
-            "이메일 중복 확인이 필요합니다.",
-            "이메일 중복 확인 여부",
+            "그룹 아이디 중복 확인이 필요합니다.",
+            "그룹 아이디 중복 확인 여부",
             JOptionPane.ERROR_MESSAGE
           );
           return;
         }
-        if (pf_pw.getText().equals("") || tf_username.getText().equals("")) {
+        if (pf_pw.getText().equals("") || tf_groupName.getText().equals("")) {
           JOptionPane.showMessageDialog(
             null,
             "모든 사용자 정보를 입력해주세요.",
@@ -156,14 +169,36 @@ public class SignUpFrame extends JFrame {
           return;
         }
 
+        if (!pf_adminPw.getText().equals(pf_adminPwConfirm.getText())) {
+          JOptionPane.showMessageDialog(
+            null,
+            "관리자 암호가 일치하지 않습니다.",
+            "암호 확인",
+            JOptionPane.ERROR_MESSAGE
+          );
+          return;
+        }
+
+        if (pf_pw.getText().equals(pf_adminPw.getText())) {
+          JOptionPane.showMessageDialog(
+            null,
+            "비밀번호와 관리자 암호는 동일하게\n설정할 수 없습니다.",
+            "암호 설정 실패",
+            JOptionPane.ERROR_MESSAGE
+          );
+          return;
+        }
+
         try {
           query =
-            "INSERT INTO simple_calendar.user (email, password, username) VALUES ('" +
-            tf_email.getText() +
+            "INSERT INTO simple_calendar.user (groupId, password, adminPassword, groupName) VALUES ('" +
+            tf_groupId.getText() +
             "', '" +
             pf_pw.getText() +
             "', '" +
-            tf_username.getText() +
+            pf_adminPw.getText() +
+            "', '" +
+            tf_groupName.getText() +
             "')";
           System.out.println(query);
           insertUpdateDeleteDataResult = dbc.insertUpdateDeleteData(query);
@@ -171,8 +206,8 @@ public class SignUpFrame extends JFrame {
 
           JOptionPane.showMessageDialog(
             null,
-            "회원가입을 완료하였습니다.",
-            "회원가입 완료",
+            "그룹을 생성하였습니다.",
+            "그룹 생성 완료",
             JOptionPane.INFORMATION_MESSAGE
           );
 
