@@ -3,12 +3,9 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.SecureCacheResponse;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.concurrent.ArrayBlockingQueue;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -18,31 +15,37 @@ import jdbc.DBConnection;
 
 class Calendar_panel extends JPanel {
 
-  private JPanel days_panel;
+  public static JPanel days_panel;
 
   private JLabel lb_dateTitle;
   private JLabel lb_week[] = new JLabel[7];
 
   private JButton bt_prevMonth, bt_today, bt_nextMonth;
-  private JButton bt_days[] = new JButton[42];
+  public static JButton bt_days[] = new JButton[42];
 
   private String str_week[] = { "일", "월", "화", "수", "목", "금", "토" };
-  private String selectedDay, formatMonth;
+  public static String selectedDay, formatMonth;
 
-  private ResultSet result;
+  private static ResultSet result;
 
-  private int xPos = 0, k;
-  private int year, month, week, day;
+  private int xPos = 0;
+  private static int k;
+  private static int year;
+  private static int month;
+  private int week;
+  private int day;
   private int dayCnt = 1, nextMonthDayCnt = 1;
   private int monthSet[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
   private int currentYear, currentMonth, currentDay, nowMonth;
   private static int user_id;
 
-  private boolean flag = false, flag2 = false;
+  private static boolean flag = false;
+  private static boolean flag2 = false;
 
-  private String query, date[];
+  private static String query;
+  private static String[] date;
 
-  private DBConnection dbc = new DBConnection();
+  private static DBConnection dbc = new DBConnection();
 
   public Calendar_panel(int user_id) {
     this.user_id = user_id;
@@ -508,7 +511,7 @@ class Calendar_panel extends JPanel {
   }
 
   // DB에서 로그인한 유저의 등록된 모든 일정 데이터의 수를 캘린더로 불러옴
-  void setScheduledEventCnt() {
+  public static void setScheduledEventCnt() {
     System.out.println("---------------------------------------------------");
     query =
       "select modify_time, count(scheduleEvent_id) from simple_calendar.scheduleEvent where user_id = " +
@@ -690,7 +693,7 @@ public class CalendarFrame extends JFrame {
     setVisible(true);
   }
 
-  public static void main(String[] args) {
+  public void main(String[] args) {
     new CalendarFrame();
   }
 }
