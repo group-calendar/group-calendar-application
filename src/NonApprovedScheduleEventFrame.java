@@ -281,6 +281,15 @@ class NonApprovedScheduleEvent_panel extends JPanel {
           System.out.print("사유 : " + error.getMessage());
         }
       }
+      for (int i = 0; i < 42; i++) {
+        String str = Calendar_panel.bt_days[i].getText();
+        if (str.endsWith(")")) {
+          Calendar_panel.bt_days[i].setText(str.substring(0, str.length() - 4));
+        }
+      }
+      Calendar_panel.setScheduledEventCnt();
+      Calendar_panel.days_panel.revalidate();
+      Calendar_panel.days_panel.repaint();
     }
   }
 
