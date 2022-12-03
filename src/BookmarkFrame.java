@@ -33,7 +33,6 @@ class Bookmark_panel extends JPanel {
   private JButton bt_addBookmark, bt_deleteBookmark, bt_modifyBookmark, bt_websiteOpen;
 
   private TableRowSorter<TableModel> sorter;
-  private TableCellRenderer tableRenderer;
 
   private ResultSet result;
 
@@ -46,14 +45,17 @@ class Bookmark_panel extends JPanel {
 
   private JTable table;
 
-  private int k, peopleCnt, row, col, insertUpdateDeleteDataResult;
+  private int k, peopleCnt, row, insertUpdateDeleteDataResult;
 
-  private static int user_id;
+  private static int group_id;
+
+  private boolean isAdmin;
 
   DBConnection dbc = new DBConnection();
 
-  public Bookmark_panel(int user_id) {
-    this.user_id = user_id;
+  public Bookmark_panel(int group_id, boolean isAdmin) {
+    this.group_id = group_id;
+    this.isAdmin = isAdmin;
   }
 
   public Bookmark_panel() {
@@ -84,7 +86,22 @@ class Bookmark_panel extends JPanel {
     bt_deleteBookmark = new JButton("삭제");
     bt_websiteOpen = new JButton("이동");
 
-    model = new DefaultTableModel(contents, header);
+    model =
+      new DefaultTableModel(contents, header) {
+        @Override
+        public Class<?> getColumnClass(int column) {
+          switch (column) {
+            case 0:
+              return Integer.class;
+            case 1:
+              return String.class;
+            case 2:
+              return String.class;
+            default:
+              return String.class;
+          }
+        }
+      };
     DefaultTableCellRenderer celAlignCenter = new DefaultTableCellRenderer();
     celAlignCenter.setHorizontalAlignment(JLabel.CENTER);
     DefaultTableCellRenderer celAlignLeft = new DefaultTableCellRenderer();
@@ -95,11 +112,6 @@ class Bookmark_panel extends JPanel {
 
     // 테이블 내 데이터 행 셀의 높이 지정
     table.setRowHeight(25);
-    tableRenderer = table.getDefaultRenderer(JButton.class);
-    table.setDefaultRenderer(
-      JButton.class,
-      new JTableButtonRenderer(tableRenderer)
-    );
     // table.setPreferredScrollableViewportSize(table.getPreferredSize());
 
     table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -107,7 +119,7 @@ class Bookmark_panel extends JPanel {
     table.getColumn("번호").setCellRenderer(celAlignCenter);
     table.getColumn("사이트 명").setPreferredWidth(150);
     table.getColumn("사이트 명").setCellRenderer(celAlignLeft);
-    table.getColumn("주소").setPreferredWidth(400);
+    table.getColumn("주소").setPreferredWidth(401);
     table.getColumn("주소").setCellRenderer(celAlignLeft);
     // -------- true And false checkbox filter --------
     // RowFilter<Object, Object> filter = new RowFilter<Object, Object>() {
@@ -150,34 +162,6 @@ class Bookmark_panel extends JPanel {
     add(scrollPane);
   }
 
-  class JTableButtonRenderer implements TableCellRenderer {
-
-    private TableCellRenderer defaultRenderer;
-
-    public JTableButtonRenderer(TableCellRenderer renderer) {
-      defaultRenderer = renderer;
-    }
-
-    public Component getTableCellRendererComponent(
-      JTable table,
-      Object value,
-      boolean isSelected,
-      boolean hasFocus,
-      int row,
-      int column
-    ) {
-      if (value instanceof Component) return (Component) value;
-      return defaultRenderer.getTableCellRendererComponent(
-        table,
-        value,
-        isSelected,
-        hasFocus,
-        row,
-        column
-      );
-    }
-  }
-
   // --------------------- ActionListener --------------------------
   class MyActionListener implements ActionListener {
 
@@ -193,8 +177,8 @@ class Bookmark_panel extends JPanel {
           return;
         }
         query =
-          "INSERT INTO `simple_calendar`.`scheduleEvent` (`user_id`, `title`, `url`) VALUES (" +
-          user_id +
+          "INSERT INTO `simple_calendar`.`bookmark` (`group_id`, `title`, `url`) VALUES (" +
+          group_id +
           ", '" +
           tf_title.getText() +
           "', '" +
@@ -207,6 +191,8 @@ class Bookmark_panel extends JPanel {
           Object[] newRow = { ++k, tf_title.getText(), tf_url.getText() };
           model.addRow(newRow);
           updatingtableData();
+          tf_title.setText("");
+          tf_url.setText("");
         } catch (Exception error) {
           System.out.println("DB 쿼리 실행 실패");
           System.out.print("사유 : " + error.getMessage());
@@ -265,7 +251,7 @@ class Bookmark_panel extends JPanel {
           );
           return;
         }
-        col = table.getSelectedColumn();
+
         query =
           "UPDATE simple_calendar.bookmark SET title = '" +
           table.getValueAt(row, 1) +
@@ -277,7 +263,6 @@ class Bookmark_panel extends JPanel {
         System.out.println(query);
         try {
           insertUpdateDeleteDataResult = dbc.insertUpdateDeleteData(query);
-          System.out.println(insertUpdateDeleteDataResult);
         } catch (Exception error) {
           System.out.println("DB 쿼리 실행 실패");
           System.out.print("사유 : " + error.getMessage());
@@ -297,7 +282,7 @@ class Bookmark_panel extends JPanel {
 
           Desktop
             .getDesktop()
-            .browse(new URI(table.getValueAt(row, col).toString()));
+            .browse(new URI(table.getValueAt(row, 2).toString()));
         } catch (Exception error) {
           System.out.println(error);
           JOptionPane.showMessageDialog(
@@ -314,8 +299,8 @@ class Bookmark_panel extends JPanel {
   void updatingtableData() {
     try {
       query =
-        "select count(*) from simple_calendar.bookmark where user_id = " +
-        user_id;
+        "select count(*) from simple_calendar.bookmark where group_id = " +
+        group_id;
 
       System.out.println(query);
       result = dbc.selectData(query);
@@ -324,8 +309,8 @@ class Bookmark_panel extends JPanel {
       contents = new Object[peopleCnt][4];
 
       query =
-        "SELECT title, url, bookmark_id FROM simple_calendar.bookmark WHERE user_id = " +
-        user_id;
+        "SELECT title, url, bookmark_id FROM simple_calendar.bookmark WHERE group_id = " +
+        group_id;
       System.out.println(query);
       result = dbc.selectData(query);
       for (k = 0; result.next(); k++) {

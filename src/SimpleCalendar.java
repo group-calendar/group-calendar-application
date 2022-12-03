@@ -1,52 +1,40 @@
 import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.RowFilter;
-import javax.swing.SwingConstants;
-import javax.swing.border.Border;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 
 public class SimpleCalendar extends JFrame {
 
-  JPanel main_panel;
-  JMenuBar menuBar;
-  JMenu mn_function, mn_exit;
-  JMenuItem mni_calendar, mni_bookmark;
+  private JPanel main_panel;
+  private JMenuBar menuBar;
+  private JMenu mn_function, mn_signOut, mn_exit;
+  static JMenu mn_changeRole, mn_role;
+  private JMenuItem mni_calendar, mni_bookmark;
 
   CardLayout card = new CardLayout();
 
-  private static int user_id;
+  static boolean isAdmin = false;
+  private static int group_id;
 
-  public SimpleCalendar(int user_id) {
-    this.user_id = user_id;
+  private static String groupName;
+
+  public SimpleCalendar(int temp) {}
+
+  public SimpleCalendar(int group_id, String groupName) {
+    this.group_id = group_id;
+    this.groupName = groupName;
     new SimpleCalendar();
   }
 
   public SimpleCalendar() {
-    setTitle("Simple Calendar");
+    setTitle("그룹 일정 관리");
     setSize(1000, 600);
     setLocationRelativeTo(null);
     setResizable(false);
@@ -54,13 +42,48 @@ public class SimpleCalendar extends JFrame {
 
     main_panel = new JPanel(card);
 
-    System.out.println("아잉눈: " + user_id);
-
     // ---------------------- 메뉴바 ----------------------
 
     menuBar = new JMenuBar();
+    menuBar.setOpaque(true);
 
     mn_function = new JMenu("기능");
+
+    mn_changeRole = new JMenu("관리자 전환");
+    mn_changeRole.addMouseListener(
+      new MouseAdapter() {
+        @Override
+        public void mousePressed(MouseEvent e) {
+          if (mn_changeRole.getText().equals("일반유저로 전환")) {
+            isAdmin = false;
+            mn_role.setText("일반 유저");
+            mn_changeRole.setText("관리자 전환");
+            JOptionPane.showMessageDialog(
+              null,
+              "일반 유저로 변경되었습니다.",
+              "변경 완료",
+              JOptionPane.PLAIN_MESSAGE
+            );
+            return;
+          }
+          new GetAdminRoleFrame(group_id);
+          new GetAdminRoleFrame();
+        }
+      }
+    );
+
+    mn_signOut = new JMenu("로그아웃");
+    mn_signOut.addMouseListener(
+      new MouseAdapter() {
+        @Override
+        public void mousePressed(MouseEvent e) {
+          isAdmin = false;
+          dispose();
+          new LoginFrame();
+        }
+      }
+    );
+
     mn_exit = new JMenu("종료");
     mn_exit.addMouseListener(
       new MouseAdapter() {
@@ -72,6 +95,9 @@ public class SimpleCalendar extends JFrame {
       }
     );
 
+    mn_role = new JMenu("일반 유저");
+    mn_role.setEnabled(false);
+
     mni_calendar = new JMenuItem("캘린더");
     mni_bookmark = new JMenuItem("북마크");
 
@@ -82,12 +108,15 @@ public class SimpleCalendar extends JFrame {
     mn_function.add(mni_bookmark);
 
     menuBar.add(mn_function);
+    menuBar.add(mn_changeRole);
+    menuBar.add(mn_signOut);
     menuBar.add(mn_exit);
+    menuBar.add(mn_role);
 
     /////////////////////////////////////////////////
 
-    new Calendar_panel(user_id);
-    new Bookmark_panel(user_id);
+    new Calendar_panel(group_id, groupName, isAdmin);
+    new Bookmark_panel(group_id, isAdmin);
 
     main_panel.add("calendarPan", new Calendar_panel());
     main_panel.add("bookmarkPan", new Bookmark_panel());
