@@ -13,7 +13,7 @@ class GetAdminRoleFrame extends JFrame {
 
   private JTextField tf_adminPassword;
 
-  private JButton bt_getAdminRole;
+  private JButton bt_getAdminRole, bt_cancel;
 
   private String query;
 
@@ -43,14 +43,26 @@ class GetAdminRoleFrame extends JFrame {
 
     bt_getAdminRole = new JButton("변경");
 
+    bt_cancel = new JButton("취소");
+    bt_cancel.addActionListener(
+      new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          dispose();
+        }
+      }
+    );
+
     lb_adminPassword.setBounds(10, 5, 100, 50);
     tf_adminPassword.setBounds(75, 16, 215, 30);
-    bt_getAdminRole.setBounds(7, 50, 283, 33);
+    bt_cancel.setBounds(9, 50, 140, 33);
+    bt_getAdminRole.setBounds(150, 50, 140, 33);
 
     bt_getAdminRole.addActionListener(new MyActionListener());
 
     main_panel.add(lb_adminPassword);
     main_panel.add(tf_adminPassword);
+    main_panel.add(bt_cancel);
     main_panel.add(bt_getAdminRole);
 
     add(main_panel);
