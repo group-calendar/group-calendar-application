@@ -27,6 +27,8 @@ class ScheduleEventFrame extends JFrame {
 
   JTabbedPane tab;
 
+  private DefaultTableModel model;
+
   public ScheduleEventFrame(int temp) {}
 
   public ScheduleEventFrame(
