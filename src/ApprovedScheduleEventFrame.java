@@ -3,9 +3,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.WindowEvent;
 import java.sql.ResultSet;
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.plaf.ActionMapUIResource;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -14,7 +16,7 @@ import jdbc.DBConnection;
 
 class ApprovedScheduleEvent_panel extends JPanel {
 
-  private JButton bt_addSchedule, bt_deleteSchedule, bt_modifySchedule;
+  private JButton bt_addSchedule, bt_cancel, bt_deleteSchedule, bt_modifySchedule;
 
   private JTextField tf_scheduleContent;
 
@@ -40,6 +42,8 @@ class ApprovedScheduleEvent_panel extends JPanel {
   private DefaultTableModel model;
 
   SimpleCalendar sc = new SimpleCalendar(1);
+
+  public ApprovedScheduleEvent_panel(ApprovedScheduleEventFrame asef) {}
 
   public ApprovedScheduleEvent_panel(
     int group_id,
@@ -94,6 +98,17 @@ class ApprovedScheduleEvent_panel extends JPanel {
     ) tf_scheduleContent.setText("새로운 이벤트");
 
     bt_addSchedule = new JButton("추가");
+    bt_cancel = new JButton("취소");
+    bt_cancel.addActionListener(
+      new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          JComponent comp = (JComponent) e.getSource();
+          Window win = SwingUtilities.getWindowAncestor(comp);
+          win.dispose();
+        }
+      }
+    );
     bt_deleteSchedule = new JButton("삭제");
     bt_modifySchedule = new JButton("수정");
 
@@ -135,8 +150,9 @@ class ApprovedScheduleEvent_panel extends JPanel {
 
     tf_scheduleContent.setBounds(10, 6, 275, 30);
     bt_addSchedule.setBounds(342, 4, 80, 33);
-    bt_modifySchedule.setBounds(48, 221, 165, 35);
-    bt_deleteSchedule.setBounds(217, 221, 165, 35);
+    bt_cancel.setBounds(8, 221, 135, 35);
+    bt_modifySchedule.setBounds(143, 221, 135, 35);
+    bt_deleteSchedule.setBounds(277, 221, 135, 35);
     scrollPane.setBounds(10, 40, 410, 175);
 
     bt_addSchedule.addActionListener(new MyActionListener());
@@ -145,6 +161,7 @@ class ApprovedScheduleEvent_panel extends JPanel {
 
     add(tf_scheduleContent);
     add(bt_addSchedule);
+    add(bt_cancel);
     add(bt_deleteSchedule);
     add(bt_modifySchedule);
     add(scrollPane);
@@ -202,8 +219,7 @@ class ApprovedScheduleEvent_panel extends JPanel {
           System.out.print("사유 : " + error.getMessage());
         }
         tf_scheduleContent.setText("");
-      }
-      else if (e.getSource() == bt_deleteSchedule) {
+      } else if (e.getSource() == bt_deleteSchedule) {
         row = table.getSelectedRow();
         if (row == -1) {
           JOptionPane.showMessageDialog(
@@ -250,8 +266,7 @@ class ApprovedScheduleEvent_panel extends JPanel {
           System.out.println("DB 쿼리 실행 실패");
           System.out.print("사유 : " + error.getMessage());
         }
-      }
-      else if (e.getSource() == bt_modifySchedule) {
+      } else if (e.getSource() == bt_modifySchedule) {
         row = table.getSelectedRow();
         if (row == -1) {
           JOptionPane.showMessageDialog(
@@ -304,13 +319,13 @@ class ApprovedScheduleEvent_panel extends JPanel {
           System.out.print("사유 : " + error.getMessage());
         }
       }
-      for (int i = 0; i < 42; i++){
+      for (int i = 0; i < 42; i++) {
         String str = Calendar_panel.bt_days[i].getText();
-        if(str != null && str.endsWith(")")) {
-          while(!str.endsWith("(")){
-            str = str.substring(0, str.length()-1);
+        if (str != null && str.endsWith(")")) {
+          while (!str.endsWith("(")) {
+            str = str.substring(0, str.length() - 1);
           }
-          str = str.substring(0, str.length()-2);
+          str = str.substring(0, str.length() - 2);
           Calendar_panel.bt_days[i].setText(str);
         }
       }
