@@ -302,20 +302,29 @@ class ApprovedScheduleEvent_panel extends JPanel {
           System.out.print("사유 : " + error.getMessage());
         }
       }
-    }
-
-    boolean checkIsAdmin() {
-      if (!sc.isAdmin) {
-        JOptionPane.showMessageDialog(
-          null,
-          "제어 권한이 없습니다.\n관리자에게 문의해 주세요.",
-          "추가 실패",
-          JOptionPane.ERROR_MESSAGE
-        );
-        return false;
+      for (int i = 0; i < 42; i++) {
+        String str = Calendar_panel.bt_days[i].getText();
+        if (str.endsWith(")")) {
+          Calendar_panel.bt_days[i].setText(str.substring(0, str.length() - 4));
+        }
       }
-      return true;
+      Calendar_panel.setScheduledEventCnt();
+      Calendar_panel.days_panel.revalidate();
+      Calendar_panel.days_panel.repaint();
     }
+  }
+
+  boolean checkIsAdmin() {
+    if (!sc.isAdmin) {
+      JOptionPane.showMessageDialog(
+        null,
+        "제어 권한이 없습니다.\n관리자에게 문의해 주세요.",
+        "추가 실패",
+        JOptionPane.ERROR_MESSAGE
+      );
+      return false;
+    }
+    return true;
   }
 
   void updatingtableData() {
