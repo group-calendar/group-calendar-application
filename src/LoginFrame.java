@@ -73,7 +73,7 @@ class LoginFrame extends JFrame {
     public void actionPerformed(ActionEvent e) {
       if (e.getSource() == bt_signIn) {
         query =
-          "SELECT * FROM simple_calendar.user where groupId LIKE '" +
+          "SELECT * FROM group_calendar.group where groupId LIKE '" +
           tf_groupId.getText() +
           "' AND password LIKE '" +
           pf_pw.getText() +
