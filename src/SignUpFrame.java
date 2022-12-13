@@ -98,9 +98,10 @@ public class SignUpFrame extends JFrame {
 
     public void actionPerformed(ActionEvent e) {
       query =
-        "select count(*) from simple_calendar.user where groupId like '" +
+        "select count(*) from group_calendar.group where groupId like '" +
         tf_groupId.getText() +
         "'";
+        System.out.println(query);
       if (e.getSource() == bt_idConfirm) {
         if (tf_groupId.getText().equals("")) {
           JOptionPane.showMessageDialog(
@@ -191,7 +192,7 @@ public class SignUpFrame extends JFrame {
 
         try {
           query =
-            "INSERT INTO simple_calendar.user (groupId, password, adminPassword, groupName) VALUES ('" +
+            "INSERT INTO group_calendar.group (groupId, password, adminPassword, groupName) VALUES ('" +
             tf_groupId.getText() +
             "', '" +
             pf_pw.getText() +
