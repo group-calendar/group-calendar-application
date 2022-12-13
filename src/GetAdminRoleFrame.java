@@ -75,7 +75,7 @@ class GetAdminRoleFrame extends JFrame {
     public void actionPerformed(ActionEvent e) {
       if (e.getSource() == bt_getAdminRole) {
         query =
-          "select * from simple_calendar.user where group_id = " +
+          "select * from group_calendar.group where group_id = " +
           group_id +
           " AND adminPassword LIKE '" +
           tf_adminPassword.getText() +
