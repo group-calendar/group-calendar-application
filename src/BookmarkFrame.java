@@ -177,7 +177,7 @@ class Bookmark_panel extends JPanel {
           return;
         }
         query =
-          "INSERT INTO `simple_calendar`.`bookmark` (`group_id`, `title`, `url`) VALUES (" +
+          "INSERT INTO `group_calendar`.`bookmark` (`group_id`, `title`, `url`) VALUES (" +
           group_id +
           ", '" +
           tf_title.getText() +
@@ -209,7 +209,7 @@ class Bookmark_panel extends JPanel {
           return;
         }
         query =
-          "DELETE FROM `simple_calendar`.`bookmark` WHERE (`bookmark_id` = " +
+          "DELETE FROM `group_calendar`.`bookmark` WHERE (`bookmark_id` = " +
           contents[row][3] +
           ")";
         System.out.println(query);
@@ -253,7 +253,7 @@ class Bookmark_panel extends JPanel {
         }
 
         query =
-          "UPDATE simple_calendar.bookmark SET title = '" +
+          "UPDATE group_calendar.bookmark SET title = '" +
           table.getValueAt(row, 1) +
           "', url = '" +
           table.getValueAt(row, 2) +
@@ -299,7 +299,7 @@ class Bookmark_panel extends JPanel {
   void updatingtableData() {
     try {
       query =
-        "select count(*) from simple_calendar.bookmark where group_id = " +
+        "select count(*) from group_calendar.bookmark where group_id = " +
         group_id;
 
       System.out.println(query);
@@ -309,7 +309,7 @@ class Bookmark_panel extends JPanel {
       contents = new Object[peopleCnt][4];
 
       query =
-        "SELECT title, url, bookmark_id FROM simple_calendar.bookmark WHERE group_id = " +
+        "SELECT title, url, bookmark_id FROM group_calendar.bookmark WHERE group_id = " +
         group_id;
       System.out.println(query);
       result = dbc.selectData(query);

@@ -193,7 +193,7 @@ class ApprovedScheduleEvent_panel extends JPanel {
         }
 
         query =
-          "INSERT INTO `simple_calendar`.`scheduleEvent` (`group_id`, `content`, `modify_time`, `completed`, `approved`) VALUES (" +
+          "INSERT INTO `group_calendar`.`scheduleEvent` (`group_id`, `content`, `modify_time`, `completed`, `approved`) VALUES (" +
           group_id +
           ", '" +
           tf_scheduleContent.getText() +
@@ -235,7 +235,7 @@ class ApprovedScheduleEvent_panel extends JPanel {
         if (!checkIsAdmin()) return;
 
         query =
-          "DELETE FROM `simple_calendar`.`scheduleEvent` WHERE (`scheduleEvent_id` = " +
+          "DELETE FROM `group_calendar`.`scheduleEvent` WHERE (`scheduleEvent_id` = " +
           contents[row][4] +
           ")";
         System.out.println(query);
@@ -291,7 +291,7 @@ class ApprovedScheduleEvent_panel extends JPanel {
         // 미승인 일정 탭에서 승인 여부 체크 시 현재 권한이 어드민인지 확인
 
         query =
-          "UPDATE `simple_calendar`.`scheduleEvent` SET `content` = '" +
+          "UPDATE `group_calendar`.`scheduleEvent` SET `content` = '" +
           table.getValueAt(row, 1) +
           "', `completed` = '" +
           table.getValueAt(row, 2) +
@@ -351,7 +351,7 @@ class ApprovedScheduleEvent_panel extends JPanel {
   void updatingtableData() {
     try {
       query =
-        "select count(*) from simple_calendar.scheduleEvent where group_id = " +
+        "select count(*) from group_calendar.scheduleEvent where group_id = " +
         group_id +
         " AND modify_time LIKE '" +
         year +
@@ -367,7 +367,7 @@ class ApprovedScheduleEvent_panel extends JPanel {
       peopleCnt = Integer.parseInt(result.getString(1));
       contents = new Object[peopleCnt][5];
       query =
-        "SELECT content, completed, approved, scheduleEvent_id FROM simple_calendar.scheduleEvent WHERE group_id = " +
+        "SELECT content, completed, approved, scheduleEvent_id FROM group_calendar.scheduleEvent WHERE group_id = " +
         group_id +
         " AND modify_time LIKE '" +
         year +
