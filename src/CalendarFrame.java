@@ -278,7 +278,7 @@ class Calendar_panel extends JPanel {
               // bt_temp.requestFocus();
               // tf_scheduleContent.setText("새로운 이벤트");
               // tf_scheduleContent.requestFocus(true);
-              // INSERT INTO `simple_calendar`.`scheduleEvent` (`scheduleEvent_id`, `group_id`, `content`, `date`, `completed`) VALUES ('1', '125', '안농~~', '2022-11-01', 'true');
+              // INSERT INTO `group_calendar`.`scheduleEvent` (`scheduleEvent_id`, `group_id`, `content`, `date`, `completed`) VALUES ('1', '125', '안농~~', '2022-11-01', 'true');
             }
           }
         );
@@ -541,7 +541,7 @@ class Calendar_panel extends JPanel {
   public static void setScheduledEventCnt() {
     System.out.println("---------------------------------------------------");
     query =
-      "select modify_time, count(scheduleEvent_id) from simple_calendar.scheduleEvent where group_id = " +
+      "select modify_time, count(scheduleEvent_id) from group_calendar.scheduleEvent where group_id = " +
       group_id +
       " group by (modify_time) order by (modify_time)";
     try {
